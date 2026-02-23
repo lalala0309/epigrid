@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class AuthService {
 
     private final NguoiDungRepository repo;
+    private final VaiTroRepository vaiTroRepo;
     private final PasswordEncoder encoder;
     private final JwtUtil jwt;
 
@@ -35,5 +36,29 @@ public class AuthService {
                 user.getVaiTro().getTenVaiTro());
 
         return new AuthResponse(token, user.getVaiTro().getTenVaiTro());
+    }
+
+    /* ================= REGISTER (THÊM MỚI) ================= */
+    public void register(RegisterRequest request) {
+
+        String email = request.getEmail().trim().toLowerCase();
+
+        if (repo.existsByEmailIgnoreCase(email)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email đã tồn tại");
+        }
+
+        VaiTro role = vaiTroRepo.findByTenVaiTro("USER")
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Role USER chưa tồn tại"));
+
+        NguoiDung user = NguoiDung.builder()
+                .hoTen(request.getHoTen().trim())
+                .email(email)
+                .password(encoder.encode(request.getPassword()))
+                .vaiTro(role)
+                .viTri(null) // chưa cần vị trí
+                .build();
+
+        repo.save(user);
     }
 }

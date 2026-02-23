@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+
+  user-service:
+    build:
+      context: ./backend/user-service
+    container_name: epigrid-user-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://host.docker.internal:3306/db_nguoi_dung
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD:
+
+
+  frontend:
+    build:
+      context: ./frontend/epigrid-ui
+    container_name: epigrid-ui
+    ports:
+      - "5173:80"
+    depends_on:
+      - user-service

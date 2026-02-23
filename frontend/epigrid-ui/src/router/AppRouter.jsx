@@ -12,6 +12,7 @@ import ManagerLayout from "../layouts/ManagerLayout";
 import AreaManagement from '../pages/admin/AreaManagement';
 import DiseaseManagement from "../pages/admin/DiseaseManagement";
 
+import CaseManagement from "../pages/manager/CaseManagement";
 
 const AppRouter = () => {
     return (
@@ -34,6 +35,7 @@ const AppRouter = () => {
 
                 <Route path="/manager" element={<ManagerLayout />}>
                     <Route index element={<ManagerDashboard />} />
+                    <Route path="cases" element={<CaseManagement />} />
                 </Route>
             </Routes>
         </BrowserRouter>

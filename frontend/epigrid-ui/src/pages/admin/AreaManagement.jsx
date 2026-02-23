@@ -1,151 +1,56 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
 import OpenLayerMap from "../../components/OpenLayerMap";
 import { X } from 'lucide-react';
+
 
 import {
     Map as MapIcon, ChevronRight, ChevronDown, Plus,
     Search, AlertTriangle, Layers, Edit2, Trash2,
     Save, MousePointer2, Maximize2, Filter
 } from 'lucide-react';
+import areaApi from "../../api/areaApi";
+
+// useEffect(() => {
+//     areaApi.getAll().then(res => {
+
+//         const parsed = res.data.map(a => {
+//             const geo = JSON.parse(a.geo);
+
+//             return {
+//                 ...a,
+//                 coords: geo.coordinates[0]
+//             };
+//         });
+
+//         setAreas(parsed);
+//     });
+// }, []);
 
 const AreaManagement = () => {
+
     const [selectedId, setSelectedId] = useState(null);
-    const [areas] = useState([
-        /* ================= LÀNG LÁ ================= */
-        {
-            id: 1,
-            name: 'Làng Lá',
-            level: 'TINH',
-            warningLimit: 100,
-            currentValue: 120,
-            coords: [
-                [106.65, 10.75],
-                [106.68, 10.75],
-                [106.68, 10.78],
-                [106.65, 10.78],
-                [106.65, 10.75]
-            ],
-            children: [
-                {
-                    id: 2,
-                    name: 'Tổng bộ làng lá',
-                    level: 'XA',
-                    warningLimit: 30,
-                    currentValue: 10,
-                    coords: [
-                        [106.66, 10.76],
-                        [106.67, 10.76],
-                        [106.67, 10.77],
-                        [106.66, 10.77],
-                        [106.66, 10.76]
-                    ]
-                },
-                {
-                    id: 3,
-                    name: 'Ám bộ làng lá',
-                    level: 'XA',
-                    warningLimit: 30,
-                    currentValue: 35,
-                    coords: [
-                        [106.665, 10.755],
-                        [106.675, 10.755],
-                        [106.675, 10.765],
-                        [106.665, 10.765],
-                        [106.665, 10.755]
-                    ]
-                }
-            ]
-        },
-        /* ================= LÀNG MƯA ================= */
-        {
-            id: 4,
-            name: 'Làng Mưa',
-            level: 'TINH',
-            warningLimit: 80,
-            currentValue: 40,
-            coords: [
-                [106.70, 10.75],
-                [106.73, 10.75],
-                [106.73, 10.78],
-                [106.70, 10.78],
-                [106.70, 10.75]
-            ],
-            children: [
-                {
-                    id: 5,
-                    name: 'Tháp Pain',
-                    level: 'XA',
-                    warningLimit: 20,
-                    currentValue: 15,
-                    coords: [
-                        [106.705, 10.755],
-                        [106.715, 10.755],
-                        [106.715, 10.765],
-                        [106.705, 10.765],
-                        [106.705, 10.755]
-                    ]
-                },
-                {
-                    id: 6,
-                    name: 'Khu trung tâm',
-                    level: 'XA',
-                    warningLimit: 20,
-                    currentValue: 28,
-                    coords: [
-                        [106.72, 10.76],
-                        [106.73, 10.76],
-                        [106.73, 10.77],
-                        [106.72, 10.77],
-                        [106.72, 10.76]
-                    ]
-                }
-            ]
-        },
-        {
-            id: 7,
-            name: 'Làng Cát',
-            level: 'TINH',
-            warningLimit: 60,
-            currentValue: 75,
-            coords: [
-                [106.74, 10.74],
-                [106.77, 10.74],
-                [106.77, 10.77],
-                [106.74, 10.77],
-                [106.74, 10.74]
-            ],
-            children: [
-                {
-                    id: 8,
-                    name: 'Bệnh viện Suna',
-                    level: 'XA',
-                    warningLimit: 25,
-                    currentValue: 12,
-                    coords: [
-                        [106.745, 10.745],
-                        [106.755, 10.745],
-                        [106.755, 10.755],
-                        [106.745, 10.755],
-                        [106.745, 10.745]
-                    ]
-                },
-                {
-                    id: 9,
-                    name: 'Văn phòng Kazekage',
-                    level: 'XA',
-                    warningLimit: 25,
-                    currentValue: 35,
-                    coords: [
-                        [106.76, 10.755],
-                        [106.77, 10.755],
-                        [106.77, 10.765],
-                        [106.76, 10.765],
-                        [106.76, 10.755]
-                    ]
-                }
-            ]
-        }
-    ]);
+    const [areas, setAreas] = useState([]);
+
+    useEffect(() => {
+
+        areaApi.getAll()
+            .then(res => {
+                console.log("API response:", res.data);
+                const transform = (list) => {
+                    return list.map(a => ({
+                        ...a,
+                        coords: null, // chưa load
+                        children: a.children ? transform(a.children) : []
+                    }));
+                };
+                const parsed = transform(res.data);
+                setAreas(parsed);
+            })
+            .catch(err => {
+                console.error("Load areas failed:", err);
+            });
+    }, []);
 
     const flattenAreas = (list) => {
         let result = [];
@@ -163,10 +68,10 @@ const AreaManagement = () => {
     const selectedArea = mapAreas.find(a => a.id === selectedId);
 
     return (
-        <div className="h-full flex bg-gray-100 overflow-hidden text-[13px]">
+        <div className="h-screen flex bg-gray-100 text-[13px]">
 
             {/* SIDEBAR TRÁI: CÂY PHÂN CẤP (HÀNH CHÍNH) - GIỮ NGUYÊN STYLE GỐC */}
-            <aside className="w-56 text-[12px] bg-white border-r border-gray-200 flex flex-col flex-none">
+            <aside className="w-56 h-full min-h-0 text-[12px] bg-white border-r border-gray-200 flex flex-col flex-none">
                 <div className="p-2.5 border-b border-gray-100 bg-gray-50/50">
                     <h2 className="font-bold text-gray-800 flex items-center gap-2">
                         <Layers size={18} className="text-blue-600" />
@@ -217,7 +122,7 @@ const AreaManagement = () => {
                 </div> */}
 
                 {/* MÔ PHỎNG BẢN ĐỒ */}
-                <OpenLayerMap areas={mapAreas} />
+                <OpenLayerMap selectedArea={selectedArea} />
 
                 {/* FOOTER BẢN ĐỒ */}
                 <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur px-3 py-1.5 rounded-full shadow-sm border border-gray-200 text-[11px] flex items-center gap-4">
@@ -286,7 +191,9 @@ const AreaManagement = () => {
                         <div className="pt-2 border-t border-gray-100">
                             <label className="text-gray-800 text-[11px] font-bold mb-2 block">Dữ liệu Polygon (WKT)</label>
                             <div className="bg-gray-900 text-green-400 p-2 rounded font-mono text-[10px] h-40 overflow-y-auto break-all whitespace-pre-wrap">
-                                POLYGON(({selectedArea.coords.map(c => c.join(' ')).join(',\n')}))
+                                <p className="text-[12px] font-mono text-gray-600">
+                                    {selectedArea.maGADM}
+                                </p>
                             </div>
                         </div>
 
@@ -315,6 +222,8 @@ const AreaTreeItem = ({ item, selectedId, setSelectedId }) => {
         <div className="mb-1">
             <div
                 onClick={() => {
+                    console.log("maGADM:", item.maGADM);  // ✅ đúng
+                    console.log("Clicked item:", item);
                     setSelectedId(item.id);
                     if (hasChildren) setOpen(!open);
                 }}

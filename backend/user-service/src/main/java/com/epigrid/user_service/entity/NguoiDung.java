@@ -31,6 +31,8 @@ public class NguoiDung {
     @JoinColumn(name = "maVaiTro", nullable = false)
     private VaiTro vaiTro;
 
-    @Column(name = "viTri", columnDefinition = "POINT", nullable = false)
+    @Column(name = "viTri", columnDefinition = "POINT", nullable = true)
     private Point viTri;
+
+    private String trangThai;
 }

@@ -46,6 +46,15 @@ const ManagerLayout = () => {
                         )}
                     </NavLink>
 
+                    <NavLink to="/manager/cases" className={linkStyle}>
+                        {({ isActive }) => (
+                            <>
+                                <Users size={18} strokeWidth={isActive ? 2.5 : 2} />
+                                <span className="text-[13px] whitespace-nowrap">Quản lý Người dùng</span>
+                            </>
+                        )}
+                    </NavLink>
+
 
 
                     {/* Vùng dịch & Cảnh báo */}

@@ -9,4 +9,8 @@ public interface NguoiDungRepository extends JpaRepository<NguoiDung, Integer> {
 
     Optional<NguoiDung> findByEmailIgnoreCase(String email);
 
+    boolean existsByEmail(String email);
+
+    boolean existsByEmailIgnoreCase(String email);
+
 }

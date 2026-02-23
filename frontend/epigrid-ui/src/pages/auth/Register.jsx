@@ -1,8 +1,76 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
+
 import logo from '../../assets/logo.png';
 
 const Register = () => {
+
+    const navigate = useNavigate();
+
+    // STATE
+    const [form, setForm] = useState({
+        hoTen: "",
+        email: "",
+        password: "",
+        confirm: ""
+    });
+
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    // HANDLE INPUT CHANGE
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+
+        setForm(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    /* ================= SUBMIT ================= */
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        setError("");
+
+        if (form.password !== form.confirm) {
+            setError("Mật khẩu xác nhận không khớp");
+            return;
+        }
+
+        try {
+            setLoading(true);
+
+            const res = await fetch("http://localhost:8081/api/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    hoTen: form.hoTen,
+                    email: form.email,
+                    password: form.password
+                })
+            });
+
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(text || "Đăng ký thất bại");
+            }
+
+            alert("Đăng ký thành công");
+            navigate("/login");
+
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
     return (
         /* h-screen cố định cao và overflow-hidden để chặn thanh trượt */
         <div className="h-screen w-full flex font-sans bg-white overflow-hidden">
@@ -102,15 +170,24 @@ const Register = () => {
                         <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-100"></div></div>
                         <span className="relative bg-white px-4 text-[9px] font-black uppercase tracking-[0.1em] text-slate-500">Thông tin đăng ký</span>
                     </div>
-
+                    {/* ERROR */}
+                    {error && (
+                        <div className="mb-4 text-red-500 text-sm font-medium">
+                            {error}
+                        </div>
+                    )}
                     {/* Form chính */}
-                    <form className="space-y-5">
+                    <form onSubmit={handleSubmit} className="space-y-5">
                         <div className="space-y-1.5">
                             <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-1">Họ và tên</label>
                             <input
+                                name="hoTen"
                                 type="text"
                                 className="w-full px-5 py-4 bg-slate-50 border-none focus:bg-white focus:ring-2 focus:ring-blue-600/20 rounded-2xl outline-none transition-all text-sm font-medium"
                                 placeholder="Nguyễn Văn A"
+                                value={form.hoTen}
+                                onChange={handleChange}
+                                required
                             />
                         </div>
 
@@ -118,8 +195,12 @@ const Register = () => {
                             <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-1">Email</label>
                             <input
                                 type="email"
+                                name="email"
                                 className="w-full px-5 py-4 bg-slate-50 border-none focus:bg-white focus:ring-2 focus:ring-blue-600/20 rounded-2xl outline-none transition-all text-sm font-medium"
                                 placeholder="name@agency.gov.vn"
+                                value={form.email}
+                                onChange={handleChange}
+                                required
                             />
                         </div>
 
@@ -127,24 +208,34 @@ const Register = () => {
                             <div className="space-y-1.5">
                                 <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-1">Mật khẩu</label>
                                 <input
+                                    name="password"
                                     type="password"
                                     className="w-full px-5 py-4 bg-slate-50 border-none focus:bg-white focus:ring-2 focus:ring-blue-600/20 rounded-2xl outline-none transition-all text-sm font-medium"
                                     placeholder="••••••••"
+                                    value={form.password}
+                                    onChange={handleChange}
+                                    required
                                 />
                             </div>
                             <div className="space-y-1.5">
                                 <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-1">Xác nhận</label>
                                 <input
+                                    name="confirm"
                                     type="password"
                                     className="w-full px-5 py-4 bg-slate-50 border-none focus:bg-white focus:ring-2 focus:ring-blue-600/20 rounded-2xl outline-none transition-all text-sm font-medium"
                                     placeholder="••••••••"
+                                    value={form.confirm}
+                                    onChange={handleChange}
+                                    required
                                 />
                             </div>
                         </div>
 
                         <div className="pt-4">
-                            <button className="w-full py-3.5 text-sm bg-[#1E3A8A] text-white rounded-2xl font-bold shadow-xl shadow-blue-900/10 hover:bg-blue-800 active:scale-[0.98] transition-all">
-                                Đăng ký
+                            <button
+                                disabled={loading}
+                                className="w-full py-3.5 text-sm bg-[#1E3A8A] text-white rounded-2xl font-bold shadow-xl shadow-blue-900/10 hover:bg-blue-800 active:scale-[0.98] transition-all">
+                                {loading ? "Đang đăng ký..." : "Đăng ký"}
                             </button>
                         </div>
                     </form>
