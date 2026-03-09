@@ -3,14 +3,14 @@ package com.example.area_service.service;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
-
+import java.time.LocalDateTime;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
-import com.example.area_service.entity.KhuVuc;
-import com.example.area_service.repository.KhuVucRepository;
+import com.example.area_service.entity.*;
+import com.example.area_service.repository.*;
 import com.example.area_service.dto.AreaResponse;
-
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class AreaService {
 
     private final KhuVucRepository repository;
-
+    private final PhanCongNhanVienRepository phanCongNhanVienRepository;
     @Value("${geojson.path}")
     private String geoPath;
 
@@ -80,6 +80,21 @@ public class AreaService {
             return Files.readString(path);
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    @Transactional
+    public void assignStaff(Integer areaId, List<Integer> staffIds) {
+
+        // Xóa phân công cũ
+        phanCongNhanVienRepository.deleteByMaKhuVuc(areaId);
+
+        // Thêm phân công mới
+        for (Integer staffId : staffIds) {
+            PhanCongNhanVien pc = new PhanCongNhanVien();
+            pc.setMaKhuVuc(areaId);
+            pc.setMaNguoiDung(staffId);
+            phanCongNhanVienRepository.save(pc);
         }
     }
 }

@@ -2,8 +2,9 @@ package com.epigrid.user_service.repository;
 
 import com.epigrid.user_service.entity.NguoiDung;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-import java.util.Optional;
+import java.util.*;
 
 public interface NguoiDungRepository extends JpaRepository<NguoiDung, Integer> {
 
@@ -13,4 +14,10 @@ public interface NguoiDungRepository extends JpaRepository<NguoiDung, Integer> {
 
     boolean existsByEmailIgnoreCase(String email);
 
+    @Query(value = """
+            SELECT *
+            FROM nguoi_dung
+            WHERE maVaiTro = 2;
+                """, nativeQuery = true)
+    List<NguoiDung> findAllNhanVienYTe();
 }

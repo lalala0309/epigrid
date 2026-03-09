@@ -23,14 +23,12 @@ const RadarPulse = (map, source, layer, center) => {
     }));
 
     source.addFeatures([areaCircle, marker]);
-
     const duration = 3500;
 
     layer.on("postrender", (event) => {
         const vectorContext = getVectorContext(event);
         const elapsed = event.frameState.time % duration;
         const ratio = elapsed / duration;
-
         const currentRadius = radius * ratio;
         const opacity = Math.pow(1 - ratio, 1.5);
 

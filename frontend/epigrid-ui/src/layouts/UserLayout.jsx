@@ -5,6 +5,7 @@ import {
     Users, Activity, AlertTriangle, Map, ShieldAlert,
     Search, Bell, LogOut, ChevronDown, ChevronRight, LayoutGrid
 } from "lucide-react";
+import LogoutButton from "../components/LogoutButton";
 
 const linkStyle = ({ isActive }) =>
     `flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200
@@ -45,30 +46,13 @@ const UserLayout = () => {
                             </>
                         )}
                     </NavLink>
-
-
-
-                    {/* Vùng dịch & Cảnh báo */}
-                    {/* <a
-                        href="#"
-                        className="flex items-center gap-3 px-3 py-3 rounded-xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200"
-                    >
-                        <AlertTriangle size={18} strokeWidth={2} />
-                        <span className="text-[13px] whitespace-nowrap">Vùng dịch & Cảnh báo</span>
-                    </a> */}
                 </nav>
 
-                <div className="p-3 mt-auto">
-                    <button className="flex items-center gap-3 px-3 py-3 w-full text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all font-medium">
-                        <LogOut size={18} className="flex-shrink-0" />
-                        <span className="text-[13px]">Đăng xuất</span>
-                    </button>
-                </div>
+                <LogoutButton />
             </aside>
 
             {/* MAIN */}
             <main className="flex-1 flex flex-col overflow-hidden">
-
                 {/* TOPBAR */}
                 <header className="h-14 bg-[#1E3A8A] flex items-center justify-between px-6 z-10 shadow-lg flex-none">
                     <div className="relative w-96">

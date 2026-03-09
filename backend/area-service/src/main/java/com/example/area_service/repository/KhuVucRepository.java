@@ -10,4 +10,5 @@ public interface KhuVucRepository extends JpaRepository<KhuVuc, Integer> {
 
     List<KhuVuc> findByMaKhuVucCha(Integer parentId);
 
+    void deleteByMaKhuVuc(Integer maKhuVuc);
 }

@@ -5,7 +5,7 @@ const ResizablePanel = ({
     side = "left",
     defaultWidth = 250,
     min = 180,
-    max = 450,
+    max = 550,
     className = "",
     children
 }) => {

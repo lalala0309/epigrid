@@ -3,10 +3,9 @@ package com.epigrid.user_service.service;
 import com.epigrid.user_service.dto.*;
 import com.epigrid.user_service.entity.*;
 import com.epigrid.user_service.repository.*;
-import com.epigrid.user_service.security.*;
 import lombok.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 
 @Service
@@ -15,6 +14,7 @@ public class UserService {
 
     private final NguoiDungRepository repo;
 
+    // Lấy tất cả user
     public List<UserDTO> getAllUsers() {
 
         return repo.findAll()
@@ -23,10 +23,29 @@ public class UserService {
                 .toList();
     }
 
+    // Lấy danh sách nhân viên y tế
+    public List<ManagerResponse> getNhanVienYTe() {
+        var list = repo.findAllNhanVienYTe();
+
+        System.out.println("Nhan vien y te: " + list.size());
+
+        return repo.findAllNhanVienYTe() // sửa ở đây
+                .stream()
+                .map(n -> {
+                    ManagerResponse dto = new ManagerResponse();
+                    dto.setMaNguoiDung(n.getMaNguoiDung());
+                    dto.setHoTen(n.getHoTen());
+                    dto.setEmail(n.getEmail());
+                    dto.setTrangThai(n.getTrangThai());
+                    return dto;
+                })
+                .toList();
+    }
+
+    // Convert entity -> DTO
     private UserDTO toDTO(NguoiDung u) {
 
         var p = u.getViTri();
-
         String viTri = null;
 
         if (p != null) {
@@ -42,5 +61,4 @@ public class UserService {
                 viTri,
                 u.getTrangThai());
     }
-
 }

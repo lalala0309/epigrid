@@ -63,9 +63,7 @@ const MapPicker = ({ lat, lng, onChange }) => {
         /* click đổi vị trí */
         map.on("click", (evt) => {
             const [newLng, newLat] = toLonLat(evt.coordinate);
-
             marker.getGeometry().setCoordinates(evt.coordinate);
-
             onChange(newLat, newLng);
         });
 
