@@ -40,9 +40,12 @@ const Login = () => {
 
 
             const data = await res.json();
-
+            console.log("LOGIN RESPONSE:", data);
             // lưu JWT
             localStorage.setItem("token", data.token);
+            localStorage.setItem("userId", data.userId);
+            localStorage.setItem("role", data.role);
+
 
             // redirect theo role
             switch (data.role) {

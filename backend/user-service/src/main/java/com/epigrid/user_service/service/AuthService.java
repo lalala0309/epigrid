@@ -35,7 +35,7 @@ public class AuthService {
                 user.getEmail(),
                 user.getVaiTro().getTenVaiTro());
 
-        return new AuthResponse(token, user.getVaiTro().getTenVaiTro());
+        return new AuthResponse(token, user.getVaiTro().getTenVaiTro(), user.getMaNguoiDung());
     }
 
     /* ================= REGISTER (THÊM MỚI) ================= */

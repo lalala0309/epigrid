@@ -83,7 +83,7 @@ const DiseaseManagement = () => {
     };
 
     return (
-        <div className="grid grid-cols-10 grid-rows-[44px_1fr] h-screen overflow-hidden bg-white font-sans">
+        <div className="flex h-full grid grid-cols-10 grid-rows-[44px_1fr] h-screen overflow-hidden bg-white font-sans">
 
             {/* ===== HEADER CHUNG ===== */}
             <div className="col-span-4 flex divide-x border-b bg-white h-11">

@@ -12,7 +12,7 @@ import { fromLonLat } from "ol/proj";
 import "ol/ol.css";
 import GeoJSON from "ol/format/GeoJSON";
 
-const OpenLayerMap = ({ selectedArea }) => {
+const OpenLayerMap = ({ selectedArea, areaColor }) => {
 
     const mapRef = useRef(null);
     const mapRefObj = useRef(null);
@@ -32,7 +32,16 @@ const OpenLayerMap = ({ selectedArea }) => {
         maskSourceRef.current = new VectorSource();
 
         areaLayerRef.current = new VectorLayer({
-            source: areaSourceRef.current
+            source: areaSourceRef.current,
+            style: new Style({
+                fill: new Fill({
+                    color: areaColor || "rgba(0,150,255,0.08)"   // nếu có param thì dùng
+                }),
+                stroke: new Stroke({
+                    color: "#0047b3",
+                    width: 3
+                })
+            })
         });
 
         maskLayerRef.current = new VectorLayer({

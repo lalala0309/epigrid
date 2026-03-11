@@ -3,15 +3,6 @@ import ResizablePanel from "../../components/resize/ResizablePanel";
 import OpenLayerMap from "../../components/OpenLayerMap";
 import { Search } from "lucide-react";
 
-/*
-Layout 2-2-6
-Left  : Loại bệnh
-Mid   : Danh sách ca bệnh
-Right : Map
-
-⚠️ Areas + cases mock để demo
-Sau này chỉ cần replace bằng API
-*/
 
 const mockDiseases = [
     { id: 1, name: "Sốt xuất huyết" },

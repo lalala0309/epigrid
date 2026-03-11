@@ -18,7 +18,6 @@ const AppRouter = () => {
     return (
         <BrowserRouter>
             <Routes>
-                {/* TRANG VÃNG LAI */}
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />

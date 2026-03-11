@@ -11,14 +11,12 @@ import {
     ShieldAlert, ChevronRight, Search, Bell, GripVertical
 } from "lucide-react";
 import AlertCard from "../../components/alert/AlertCard";
-
+import OpenLayerMap from "../../components/OpenLayerMap";
 
 
 
 const ManagerDashboard = () => {
-    const mapRef = useRef(null);
-
-    // --- PHẦN THÊM MỚI: Quản lý kích thước hai cột ---
+    const [selectedArea, setSelectedArea] = useState(null);
     const [leftWidth, setLeftWidth] = useState(260);
     const [rightWidth, setRightWidth] = useState(300);
 
@@ -47,69 +45,19 @@ const ManagerDashboard = () => {
     }, [leftWidth, rightWidth]);
 
     useEffect(() => {
-        if (!mapRef.current) return;
 
-        const vectorSource = new VectorSource();
-        const vectorLayer = new VectorLayer({ source: vectorSource, zIndex: 1 });
+        const userId = localStorage.getItem("userId");
 
-        const map = new Map({
-            target: mapRef.current,
-            layers: [
-                new TileLayer({
-                    source: new OSM(),
-                    className: 'map-gray-scale opacity-90'
-                }),
-                vectorLayer
-            ],
-            view: new View({
-                center: fromLonLat([105.85, 21.03]),
-                zoom: 14.5
-            }),
-        });
-
-        navigator.geolocation.getCurrentPosition((pos) => {
-            const centerLon = pos.coords.longitude;
-            const centerLat = pos.coords.latitude;
-
-            // 1. POLYGON VÙNG DỊCH (Vùng đỏ)
-            const wardCoords = [
-                [centerLon - 0.01, centerLat - 0.005],
-                [centerLon + 0.01, centerLat - 0.005],
-                [centerLon + 0.012, centerLat + 0.006],
-                [centerLon, centerLat + 0.01],
-                [centerLon - 0.012, centerLat + 0.006],
-            ];
-
-            const polygon = new Feature(new Polygon([wardCoords.map(c => fromLonLat(c))]));
-            polygon.setStyle(new Style({
-                fill: new Fill({ color: "rgba(239, 68, 68, 0.1)" }),
-                stroke: new Stroke({ color: "#EF4444", width: 2, lineDash: [5, 5] }),
-            }));
-            vectorSource.addFeature(polygon);
-
-            // 2. CÁC ĐIỂM Ổ DỊCH
-            const outbreakPoints = [
-                [centerLon + 0.002, centerLat + 0.001],
-                [centerLon - 0.003, centerLat + 0.002],
-            ];
-
-            outbreakPoints.forEach(point => {
-                const feature = new Feature(new CircleGeom(fromLonLat(point), 60));
-                feature.setStyle(new Style({
-                    fill: new Fill({ color: "rgba(239, 68, 68, 0.4)" }),
-                    stroke: new Stroke({ color: "#b91c1c", width: 1 })
-                }));
-                vectorSource.addFeature(feature);
+        fetch(`http://localhost:8082/api/areas/manager/${userId}`)
+            .then(res => res.json())
+            .then(data => {
+                console.log("Area:", data);
+                setSelectedArea({
+                    maGADM: data.maGADM,
+                    level: data.level
+                });
             });
 
-            map.getView().animate({
-                center: fromLonLat([centerLon, centerLat]),
-                zoom: 15,
-                duration: 1000
-            });
-        });
-
-        return () => map.setTarget(null);
     }, []);
 
     return (
@@ -173,7 +121,7 @@ const ManagerDashboard = () => {
                     <KPICard label="Ca tiếp xúc (F1)" value="458" icon={<Users size={16} />} color="text-orange-400" />
                     <KPICard label="Đang cách ly" value="1,204" icon={<Activity size={16} />} color="text-blue-400" />
                 </div> */}
-                <div ref={mapRef} className="flex-1 w-full h-full" />
+                <OpenLayerMap selectedArea={selectedArea} areaColor="rgba(0,150,255,0.10)" />
             </main>
 
             {/*CỘT PHẢI (Resizable) */}

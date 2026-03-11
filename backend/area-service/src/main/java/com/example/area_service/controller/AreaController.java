@@ -44,4 +44,14 @@ public class AreaController {
         areaService.assignStaff(maKhuVuc, staffIds);
         return ResponseEntity.ok("Assigned successfully");
     }
+
+    @GetMapping("/manager/{maNguoiDung}")
+    public ResponseEntity<AreaResponse> getAreaOfManager(
+            @PathVariable Integer maNguoiDung) {
+
+        AreaResponse area = areaStaffService.getAreaByStaff(maNguoiDung);
+
+        return ResponseEntity.ok(area);
+    }
+
 }

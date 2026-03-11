@@ -77,10 +77,9 @@ const AreaManagement = () => {
     };
 
     const renderLevelBadge = (level) => {
-        const styles = { 'TINH': ' text-purple-700 ', 'HUYEN': 'text-blue-700', 'XA': 'text-emerald-700' };
         const labels = { 'TINH': 'Cấp Tỉnh', 'HUYEN': 'Cấp Huyện', 'XA': 'Cấp Xã' };
         return (
-            <span className={`px-2 py-1 text-[12px] font-bold tracking-wider ${styles[level] || 'bg-gray-50'}`}>
+            <span className={`px-2 py-1 text-[12px] font-bold tracking-wider text-blue-800 || 'bg-gray-50'}`}>
                 {labels[level] || labels[level]}
             </span>
         );
@@ -91,9 +90,7 @@ const AreaManagement = () => {
         const staffIds = staffOfArea.map(s => s.maNguoiDung);
 
         try {
-
             await areaApi.assignStaff(selectedArea.id, staffIds);
-
             alert("Phân công thành công");
 
             // setIsAssigning(false);
@@ -167,12 +164,12 @@ const AreaManagement = () => {
 
             {/* 4. BẢNG CHI TIẾT */}
             {selectedArea && (
-                <ResizablePanel side="right" defaultWidth={200} className="bg-white border-l border-gray-200 flex-none z-20 shadow-xl">
+                <ResizablePanel side="right" defaultWidth={250} className="bg-white border-l border-gray-200 flex-none z-20 shadow-xl">
                     <div className="h-full flex flex-col">
-                        <div className="p-3 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
-                            <div className="flex items-center gap-2 text-blue-700 font-bold uppercase text-[11px]">
+                        <div className="p-2 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
+                            <div className="flex items-center gap-2 text-blue-900 font-bold text-[13px]">
                                 {isAssigning ? <UserPlus size={14} /> : <Info size={14} />}
-                                {isAssigning ? "Đang phân công" : "Thông tin vùng"}
+                                {isAssigning ? "Phân công" : "Thông tin vùng"}
                             </div>
                             <button onClick={() => setSelectedId(null)} className="text-gray-400 hover:text-red-500"><X size={14} /></button>
                         </div>
@@ -183,9 +180,9 @@ const AreaManagement = () => {
                                     <h3 className="text-[16px] font-black text-gray-800 uppercase tracking-tighter leading-tight">
                                         {selectedArea.name}
                                     </h3>
-                                    <div className="mb-2">{renderLevelBadge(selectedArea.level)}</div>
+                                    <div className="mb-1">{renderLevelBadge(selectedArea.level)}</div>
                                 </div>
-                                <div className="p-4 grid grid-cols-2 gap-3 text-center">
+                                <div className="px-4 pb-2 grid grid-cols-2 gap-2 text-center">
                                     <div className="p-2 rounded-lg border border-gray-100 bg-gray-50/30">
                                         <p className="text-[9px] text-gray-400 font-bold uppercase">Ngưỡng</p>
                                         {isEditingLimit ? (
@@ -201,21 +198,21 @@ const AreaManagement = () => {
                                         </p>
                                     </div>
                                 </div>
-                                <div className="px-4 mb-4">
+                                <div className="px-4 mb-2">
                                     {isEditingLimit ? (
                                         <button onClick={handleSaveLimit} className="w-full py-2 bg-green-600 text-white rounded font-bold text-[11px] flex items-center justify-center gap-2 hover:bg-green-700">
-                                            <Save size={14} /> LƯU CÀI ĐẶT
+                                            <Save size={14} /> Lưu
                                         </button>
                                     ) : (
-                                        <button onClick={() => { setIsEditingLimit(true); setTempLimit(selectedArea.warningLimit); }} className="w-full py-2 border border-gray-200 text-gray-600 rounded font-bold text-[11px] flex items-center justify-center gap-2 hover:bg-gray-50">
-                                            <Settings size={14} /> CÀI ĐẶT NGƯỠNG
+                                        <button onClick={() => { setIsEditingLimit(true); setTempLimit(selectedArea.warningLimit); }} className="w-full py-2 border border-gray-200 text-gray-600 rounded font-bold text-[14px] flex items-center justify-center gap-2 hover:bg-gray-50">
+                                            <Settings size={14} />Cài đặt ngưỡng
                                         </button>
                                     )}
                                 </div>
                                 <div className="px-4 pb-4">
                                     {selectedArea.level === 'XA' ? (
-                                        <button onClick={() => setIsAssigning(true)} className="w-full py-2.5 bg-[#1E3A8A] text-white rounded-lg font-bold text-[11px] shadow hover:bg-blue-800 transition-all flex items-center justify-center gap-2">
-                                            <UserPlus size={14} /> BẮT ĐẦU PHÂN CÔNG
+                                        <button onClick={() => setIsAssigning(true)} className="w-full py-2.5 bg-[#1E3A8A] text-white rounded-lg font-bold text-[14px] shadow hover:bg-blue-800 transition-all flex items-center justify-center gap-2">
+                                            <UserPlus size={14} />Phân công
                                         </button>
                                     ) : (
                                         <div className="p-3 bg-blue-50 border border-blue-100 rounded-lg flex gap-2 text-blue-700">
@@ -241,7 +238,7 @@ const AreaManagement = () => {
                                 </div>
 
                                 <div className="flex-1 p-2 space-y-1.5 overflow-y-auto">
-                                    <p className="text-[10px] text-gray-400 font-bold px-1 mb-2 uppercase tracking-widest">Nhân sự đã chọn ({staffOfArea.length})</p>
+                                    <p className="text-[10px] text-gray-400 font-medium px-1 mb-2">Nhân sự đã chọn ({staffOfArea.length})</p>
                                     {staffOfArea.map(staff => (
                                         <div key={staff.maNguoiDung} className="p-2 border border-gray-100 rounded flex justify-between items-center hover:bg-red-50 group transition-all">
                                             <div className="flex items-center gap-2">
