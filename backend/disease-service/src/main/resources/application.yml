@@ -1,0 +1,32 @@
+server:
+  port: 8083
+
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/db_dich_benh
+    username: epigrid_admin
+    password: 123456
+
+# spring:
+#   datasource:
+#     url: ${DB_URL}
+#     username: ${DB_USER}
+#     password: ${DB_PASS}
+
+
+  jpa:
+      hibernate:
+        ddl-auto: update
+        naming:
+          physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl  
+      show-sql: true
+      properties:
+        hibernate:
+          format_sql: true
+
+jwt:
+  secret: epigrid-secret-key-very-long-12345678901234567890
+  expiration: 86400000
+
+

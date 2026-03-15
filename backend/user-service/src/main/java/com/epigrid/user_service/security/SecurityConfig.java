@@ -33,18 +33,18 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                // ❌ dùng JWT → không cần CSRF
+                // dùng JWT → không cần CSRF
                 .csrf(csrf -> csrf.disable())
 
-                // ✅ bật CORS
+                // bật CORS
                 .cors(Customizer.withDefaults())
 
-                // ❌ JWT → không dùng session
+                // JWT → không dùng session
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // ⭐⭐ QUAN TRỌNG NHẤT (fix 403 React preflight)
+                        // QUAN TRỌNG NHẤT (fix 403 React preflight)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         // login/register public

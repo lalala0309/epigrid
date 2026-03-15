@@ -1,4 +1,4 @@
-package com.example.area_service.config;
+package com.example.disease_service.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +19,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/api/**").permitAll()
                         .anyRequest().permitAll());
 
         return http.build();

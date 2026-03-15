@@ -9,10 +9,15 @@ import UserManagement from "../pages/admin/UserManagement";
 import AdminLayout from "../layouts/AdminLayout";
 import UserLayout from "../layouts/UserLayout";
 import ManagerLayout from "../layouts/ManagerLayout";
+import DiseaseLayout from "../layouts/DiseaseLayout";
 import AreaManagement from '../pages/admin/AreaManagement';
 import DiseaseManagement from "../pages/admin/DiseaseManagement";
 
 import CaseManagement from "../pages/manager/CaseManagement";
+import AgentsPage from "../pages/admin/disease/AgentsPage";
+import SymptomsPage from "../pages/admin/disease/SymptomsPage";
+import TransmissionPage from "../pages/admin/disease/TransmissionPage";
+import DangerGroupPage from "../pages/admin/disease/DangerGroupPage";
 
 const AppRouter = () => {
     return (
@@ -25,7 +30,15 @@ const AppRouter = () => {
                     <Route index element={<AdminDashboard />} />
                     <Route path="users" element={<UserManagement />} />
                     <Route path="areas" element={<AreaManagement />} />
-                    <Route path="diseases" element={<DiseaseManagement />} />
+                    {/* Layout quản lý dịch bệnh */}
+                    <Route path="diseases" element={<DiseaseLayout />}>
+                        <Route index element={<DiseaseManagement />} />
+                        <Route path="agents" element={<AgentsPage />} />
+                        <Route path="symptoms" element={<SymptomsPage />} />
+                        <Route path="transmissions" element={<TransmissionPage />} />
+                        <Route path="danger-groups" element={<DangerGroupPage />} />
+                    </Route>
+
                 </Route>
 
                 <Route path="/user" element={<UserLayout />}>
