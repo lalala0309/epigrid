@@ -10,6 +10,22 @@ const api = axios.create({
 });
 
 const diseaseApi = {
+    /* ===============================
+   DISEASES (dich_benh)
+================================ */
+
+    diseases: {
+
+        getAll: () => api.get(""),
+
+        getById: (id) => api.get(`/${id}`),
+
+        create: (data) => api.post("", data),
+
+        update: (id, data) => api.put(`/${id}`, data),
+
+        delete: (id) => api.delete(`/${id}`)
+    },
 
     dangerGroups: {
 

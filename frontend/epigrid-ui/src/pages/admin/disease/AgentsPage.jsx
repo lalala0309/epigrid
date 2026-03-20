@@ -107,7 +107,7 @@ const AgentsPage = () => {
                 {/* Sidebar Phân loại */}
                 <aside className="w-48 bg-white border-r flex flex-col shrink-0">
                     <div className="p-3 border-b flex justify-between items-center h-10">
-                        <span className="font-bold text-slate-400 uppercase tracking-widest text-[10px]">Phân loại</span>
+                        <span className="font-bold text-slate-500 uppercase text-[10px]">Phân loại</span>
                         {viewMode === "type" && (
                             <button onClick={() => openForm("type", "add")} className="p-1 hover:bg-indigo-50 text-indigo-600 rounded-md transition-colors">
                                 <Plus size={14} />
@@ -128,7 +128,7 @@ const AgentsPage = () => {
                 {viewMode === "agent" && (
                     <aside className="w-56 bg-white border-r flex flex-col shrink-0">
                         <div className="p-3 border-b flex justify-between items-center h-10">
-                            <span className="font-bold text-slate-400 uppercase tracking-widest text-[10px]">Danh sách</span>
+                            <span className="font-bold text-slate-500 uppercase text-[10px]">Danh sách</span>
                             <button onClick={() => openForm("agent", "add")} className="p-1 hover:bg-indigo-50 text-indigo-600 rounded-md transition-colors">
                                 <Plus size={14} />
                             </button>
@@ -150,19 +150,19 @@ const AgentsPage = () => {
                     <div className="h-full bg-white border rounded-2xl shadow-sm flex flex-col overflow-hidden">
                         {(isFormOpen || (viewMode === "agent" ? selectedAgent : selectedType)) ? (
                             <>
-                                <div className={`p-4 flex items-center justify-between shrink-0 text-white transition-colors duration-500 ${isFormOpen ? 'bg-indigo-600' : 'bg-[#1E3A8A]'}`}>
+                                <div className={`p-2 flex items-center justify-between shrink-0 text-gray-500 border-b transition-colors duration-500 ${isFormOpen ? 'bg-gray-50' : 'bg-gray-50'}`}>
                                     <div className="flex items-center gap-2 pl-2">
                                         {isFormOpen ? <Pencil size={18} /> : <Info size={18} />}
-                                        <h2 className="text-sm font-bold uppercase tracking-tight">
+                                        <h2 className="text-sm font-bold">
                                             {isFormOpen
                                                 ? `${formAction === 'add' ? 'Thêm mới' : 'Chỉnh sửa'} ${formTarget === 'type' ? 'loại' : 'tác nhân'}`
-                                                : (viewMode === "agent" ? `Thông tin: ${selectedAgent?.name}` : `Thông tin loại: ${selectedType?.name}`)}
+                                                : (viewMode === "agent" ? `Thông tin tác nhân` : `Thông tin loại`)}
                                         </h2>
                                     </div>
                                     {!isFormOpen && (
                                         <div className="flex gap-1">
-                                            <button onClick={() => openForm(viewMode, "edit")} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><Pencil size={16} /></button>
-                                            <button onClick={handleDelete} className="p-2 hover:bg-red-500 rounded-lg transition-colors"><Trash2 size={16} /></button>
+                                            <button onClick={() => openForm(viewMode, "edit")} className="p-2 hover:bg-indigo-100 text-indigo-600 rounded-lg transition-colors"><Pencil size={16} /></button>
+                                            <button onClick={handleDelete} className="p-2 hover:bg-red-50 text-red-500 rounded-lg transition-colors"><Trash2 size={16} /></button>
                                         </div>
                                     )}
                                 </div>
@@ -174,11 +174,11 @@ const AgentsPage = () => {
                                                 {formTarget === "agent" ? (
                                                     <div className="grid grid-cols-2 gap-4">
                                                         <div className="space-y-1.5">
-                                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tên gọi</label>
-                                                            <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full border-2 border-slate-100 rounded-xl p-3 focus:border-indigo-500 outline-none transition-all text-xs" placeholder="Nhập tên..." />
+                                                            <label className="text-[12px] font-bold text-slate-600">Tên gọi</label>
+                                                            <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full border-2 border-slate-100 rounded-xl p-3 focus:border-indigo-500 outline-none transition-all text-xs" placeholder="Nhập tên ..." />
                                                         </div>
                                                         <div className="space-y-1.5">
-                                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Phân loại nhóm</label>
+                                                            <label className="text-[12px] font-bold text-slate-600">Phân loại nhóm</label>
                                                             <select value={formData.typeId} onChange={(e) => setFormData({ ...formData, typeId: e.target.value })} className="w-full border-2 border-slate-100 rounded-xl p-3 focus:border-indigo-500 outline-none transition-all text-xs bg-white">
                                                                 {types.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                                                             </select>
@@ -186,18 +186,18 @@ const AgentsPage = () => {
                                                     </div>
                                                 ) : (
                                                     <div className="space-y-1.5">
-                                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tên gọi loại</label>
+                                                        <label className="text-[12px] font-bold text-slate-600">Tên gọi loại</label>
                                                         <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full border-2 border-slate-100 rounded-xl p-3 focus:border-indigo-500 outline-none transition-all text-xs" placeholder="Nhập tên loại..." />
                                                     </div>
                                                 )}
                                                 <div className="space-y-1.5">
-                                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Mô tả / Chi tiết nội dung</label>
+                                                    <label className="text-[12px] font-bold text-slate-600">Mô tả chi tiết</label>
                                                     <textarea rows={16} value={formData.desc} onChange={(e) => setFormData({ ...formData, desc: e.target.value })} className="w-full border-2 border-slate-100 rounded-xl p-4 focus:border-indigo-500 outline-none transition-all text-xs resize-none" placeholder="Nhập thông tin chi tiết..." />
                                                 </div>
                                                 <div className="flex gap-3 pt-2 justify-end">
-                                                    <button onClick={() => setIsFormOpen(false)} className="px-8 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition-all">Đóng</button>
-                                                    <button onClick={handleSave} className="px-10 bg-indigo-600 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all">
-                                                        <Save size={16} /> Lưu thay đổi
+                                                    <button onClick={() => setIsFormOpen(false)} className="px-8 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition-all">Huỷ</button>
+                                                    <button onClick={handleSave} className="px-4 bg-indigo-600 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all">
+                                                        <Save size={16} /> Lưu
                                                     </button>
                                                 </div>
                                             </div>
@@ -206,22 +206,22 @@ const AgentsPage = () => {
                                                 {viewMode === "agent" ? (
                                                     <div className="grid grid-cols-2 gap-4">
                                                         <div className="space-y-1.5">
-                                                            <span className="text-slate-400 block uppercase text-[10px] font-bold tracking-widest">Tên gọi hệ thống</span>
-                                                            <p className="text-sm font-bold text-[#1E3A8A] bg-slate-50 p-3 rounded-xl border border-slate-100">{selectedAgent?.name}</p>
+                                                            <span className="text-slate-600 block text-[12px] font-bold">Tên gọi hệ thống</span>
+                                                            <p className="text-sm font-bold text-[#1E3A8A] bg-slate-50 p-3 rounded-xl border border-slate-100 italic">{selectedAgent?.name}</p>
                                                         </div>
                                                         <div className="space-y-1.5">
-                                                            <span className="text-slate-400 block uppercase text-[10px] font-bold tracking-widest">Thuộc nhóm phân loại</span>
-                                                            <p className="text-xs text-slate-700 bg-slate-50 p-3 rounded-xl border border-slate-100 italic">{selectedType?.name}</p>
+                                                            <span className="text-slate-600 block text-[12px] font-bold">Nhóm phân loại</span>
+                                                            <p className="text-xs text-slate-700 bg-slate-50 p-3 rounded-xl border border-slate-100">{selectedType?.name}</p>
                                                         </div>
                                                     </div>
                                                 ) : (
                                                     <div className="space-y-1.5">
-                                                        <span className="text-slate-400 block uppercase text-[10px] font-bold tracking-widest">Tên gọi loại</span>
+                                                        <span className="text-slate-600 block text-[12px] font-bold">Tên gọi loại</span>
                                                         <p className="text-sm font-bold text-[#1E3A8A] bg-slate-50 p-3 rounded-xl border border-slate-100">{selectedType?.name}</p>
                                                     </div>
                                                 )}
                                                 <div className="space-y-1.5">
-                                                    <span className="text-slate-400 block uppercase text-[10px] font-bold tracking-widest">Mô tả chi tiết nội dung</span>
+                                                    <span className="text-slate-600 block text-[12px] font-bold">Mô tả chi tiết</span>
                                                     <div className="text-xs leading-relaxed text-slate-600 bg-slate-50 p-5 rounded-xl border border-slate-100 min-h-[300px] whitespace-pre-wrap">
                                                         {viewMode === "agent" ? selectedAgent?.detail : selectedType?.description}
                                                     </div>
