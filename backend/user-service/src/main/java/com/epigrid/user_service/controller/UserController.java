@@ -2,11 +2,11 @@ package com.epigrid.user_service.controller;
 
 import com.epigrid.user_service.dto.*;
 import com.epigrid.user_service.entity.NguoiDung;
-import com.epigrid.user_service.dto.ManagerResponse;
 import com.epigrid.user_service.repository.NguoiDungRepository;
 import com.epigrid.user_service.service.*;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;;
 
@@ -39,5 +39,21 @@ public class UserController {
                     return dto;
                 })
                 .toList();
+    }
+
+    @GetMapping("/{id}")
+    public ManagerResponse getNhanVienById(@PathVariable Integer id) {
+
+        Object[] row = nguoiDungRepository.findNhanVienRawById(id)
+                .orElseThrow(() -> new RuntimeException("Không phải nhân viên y tế"));
+
+        ManagerResponse dto = new ManagerResponse();
+        dto.setMaNguoiDung((Integer) row[0]);
+        dto.setHoTen((String) row[1]);
+        dto.setEmail((String) row[2]);
+        dto.setTrangThai((String) row[3]);
+        dto.setMaNhanVien((String) row[4]);
+
+        return dto;
     }
 }

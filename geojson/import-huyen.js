@@ -30,7 +30,6 @@ async function run() {
         const districtGADM = props.GID_2;   // ví dụ: VNM.1.3_1
         const ten = normalizeName(props.NAME_2);
 
-        // 1️⃣ tìm tỉnh cha
         const [rows] = await conn.execute(
             `SELECT maKhuVuc 
              FROM khu_vuc 
