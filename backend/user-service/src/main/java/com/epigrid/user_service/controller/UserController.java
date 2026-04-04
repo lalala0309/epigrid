@@ -42,18 +42,18 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ManagerResponse getNhanVienById(@PathVariable Integer id) {
+    public ResponseEntity<?> getNhanVienById(@PathVariable Integer id) {
 
-        Object[] row = nguoiDungRepository.findNhanVienRawById(id)
-                .orElseThrow(() -> new RuntimeException("Không phải nhân viên y tế"));
-
-        ManagerResponse dto = new ManagerResponse();
-        dto.setMaNguoiDung((Integer) row[0]);
-        dto.setHoTen((String) row[1]);
-        dto.setEmail((String) row[2]);
-        dto.setTrangThai((String) row[3]);
-        dto.setMaNhanVien((String) row[4]);
-
-        return dto;
+        return nguoiDungRepository.findNhanVienRawById(id)
+                .map(p -> {
+                    ManagerResponse dto = new ManagerResponse();
+                    dto.setMaNguoiDung(p.getMaNguoiDung());
+                    dto.setHoTen(p.getHoTen());
+                    dto.setEmail(p.getEmail());
+                    dto.setTrangThai(p.getTrangThai());
+                    dto.setMaNhanVien(p.getMaNhanVien());
+                    return ResponseEntity.ok(dto);
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

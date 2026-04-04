@@ -22,6 +22,7 @@ const caseApi = {
     contacts: {
         getAll: (caseId) => api.get(`/${caseId}/contacts`),
         add: (caseId, data) => api.post(`/${caseId}/contacts`, data),
+        update: (contactId, data) => api.put(`/contacts/${contactId}`, data),
         delete: (contactId) => api.delete(`/contacts/${contactId}`),
     }
 };

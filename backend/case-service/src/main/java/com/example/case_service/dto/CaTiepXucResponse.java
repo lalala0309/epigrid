@@ -13,6 +13,7 @@ public class CaTiepXucResponse {
     private LocalDate ngaySinh;
     private CaBenh.GioiTinh gioiTinh;
     private LocalDate ngayTiepXuc;
+    private Integer nguoiBaoCao;
     private CaTiepXuc.MucDoNguyCo mucDoNguyCo;
     private Double lat;
     private Double lng;

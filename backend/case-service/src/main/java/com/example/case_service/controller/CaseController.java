@@ -63,4 +63,11 @@ public class CaseController {
         caseService.deleteContact(contactId);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/contacts/{contactId}")
+    public ResponseEntity<CaTiepXucResponse> updateContact(
+            @PathVariable Integer contactId,
+            @RequestBody CaTiepXucRequest request) {
+        return ResponseEntity.ok(caseService.updateContact(contactId, request));
+    }
 }

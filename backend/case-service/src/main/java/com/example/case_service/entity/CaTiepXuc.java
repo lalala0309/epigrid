@@ -7,8 +7,10 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "ca_tiep_xuc")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class CaTiepXuc {
 
@@ -34,6 +36,9 @@ public class CaTiepXuc {
     @Column(nullable = false)
     private CaBenh.GioiTinh gioiTinh;
 
+    @Column(name = "nguoiBaoCao", nullable = false)
+    private Integer nguoiBaoCao;
+
     @Column(nullable = false)
     private LocalDate ngayTiepXuc;
 
@@ -44,5 +49,7 @@ public class CaTiepXuc {
     @Column(nullable = false)
     private MucDoNguyCo mucDoNguyCo;
 
-    public enum MucDoNguyCo { THAP, TRUNG_BINH, CAO }
+    public enum MucDoNguyCo {
+        THAP, TRUNG_BINH, CAO
+    }
 }

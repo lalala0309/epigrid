@@ -8,16 +8,18 @@ import OSM from "ol/source/OSM";
 import Feature from "ol/Feature";
 import Polygon from "ol/geom/Polygon";
 import Point from "ol/geom/Point";
+import LineString from "ol/geom/LineString";
 import { Fill, Stroke, Style, Circle as CircleStyle } from "ol/style";
 import { fromLonLat } from "ol/proj";
 import "ol/ol.css";
 import GeoJSON from "ol/format/GeoJSON";
 
-const CaseLocationMap = ({ selectedArea, areaColor, lat, lng }) => {
+const CaseLocationMap = ({ selectedArea, areaColor, lat, lng, contacts }) => {
 
     const mapRef = useRef(null);
     const mapRefObj = useRef(null);
-
+    const contactSourceRef = useRef(null);
+    const contactLayerRef = useRef(null);
     const areaSourceRef = useRef(null);
     const areaLayerRef = useRef(null);
 
@@ -34,6 +36,19 @@ const CaseLocationMap = ({ selectedArea, areaColor, lat, lng }) => {
         areaSourceRef.current = new VectorSource();
         maskSourceRef.current = new VectorSource();
         markerSourceRef.current = new VectorSource();
+
+        contactSourceRef.current = new VectorSource();
+
+        contactLayerRef.current = new VectorLayer({
+            source: contactSourceRef.current,
+            style: new Style({
+                image: new CircleStyle({
+                    radius: 5,
+                    fill: new Fill({ color: "#f59e0b" }), // vàng cam
+                    stroke: new Stroke({ color: "#fff", width: 2 })
+                })
+            })
+        });
 
         areaLayerRef.current = new VectorLayer({
             source: areaSourceRef.current,
@@ -75,7 +90,8 @@ const CaseLocationMap = ({ selectedArea, areaColor, lat, lng }) => {
                 new TileLayer({ source: new OSM() }),
                 maskLayerRef.current,
                 areaLayerRef.current,
-                markerLayerRef.current //  thêm thôi, còn lại giữ nguyên
+                markerLayerRef.current,
+                contactLayerRef.current
             ],
             view: new View({
                 center: fromLonLat([106.66, 10.76]),
@@ -184,6 +200,43 @@ const CaseLocationMap = ({ selectedArea, areaColor, lat, lng }) => {
         markerSourceRef.current.addFeature(marker);
 
     }, [lat, lng]);
+
+
+    useEffect(() => {
+        if (!contacts || !lat || !lng) return;
+
+        contactSourceRef.current.clear();
+
+        const caseCoord = fromLonLat([lng, lat]);
+
+        contacts.forEach(ct => {
+            if (!ct.lat || !ct.lng) return;
+
+            const contactCoord = fromLonLat([ct.lng, ct.lat]);
+
+            // 🔸 Marker contact
+            const contactFeature = new Feature({
+                geometry: new Point(contactCoord)
+            });
+
+            // 🔸 Line nối
+            const lineFeature = new Feature({
+                geometry: new LineString([caseCoord, contactCoord])
+            });
+
+            lineFeature.setStyle(new Style({
+                stroke: new Stroke({
+                    color: "#fb923c", // cam
+                    width: 2,
+                    lineDash: [6, 6]
+                })
+            }));
+
+            contactSourceRef.current.addFeature(contactFeature);
+            contactSourceRef.current.addFeature(lineFeature);
+        });
+
+    }, [contacts, lat, lng]);
 
     return <div ref={mapRef} className="w-full h-full" />;
 };

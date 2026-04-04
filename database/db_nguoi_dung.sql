@@ -34,7 +34,7 @@ CREATE TABLE `nguoi_dung` (
   UNIQUE KEY `UKmajqh5g4djy2tp3p9dvr64brp` (`email`),
   KEY `FK564xtp8gen4cht7nyr8pv2nv0` (`maVaiTro`),
   CONSTRAINT `FK564xtp8gen4cht7nyr8pv2nv0` FOREIGN KEY (`maVaiTro`) REFERENCES `vai_tro` (`maVaiTro`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -45,7 +45,7 @@ DROP TABLE IF EXISTS `nhan_vien_y_te`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `nhan_vien_y_te` (
-  `maNhanVien` varchar(20) NOT NULL,
+  `maNhanVien` varchar(255) NOT NULL,
   `maNguoiDung` int NOT NULL,
   PRIMARY KEY (`maNhanVien`),
   KEY `maNguoiDung` (`maNguoiDung`),
@@ -76,4 +76,4 @@ CREATE TABLE `vai_tro` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-03-08  0:30:41
+-- Dump completed on 2026-04-03 23:39:18

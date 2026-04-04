@@ -69,6 +69,7 @@ public class CaseService {
         r.setNgaySinh(ct.getNgaySinh());
         r.setGioiTinh(ct.getGioiTinh());
         r.setNgayTiepXuc(ct.getNgayTiepXuc());
+        r.setNguoiBaoCao(ct.getNguoiBaoCao());
         r.setMucDoNguyCo(ct.getMucDoNguyCo());
         if (ct.getViTri() != null) {
             r.setLat(ct.getViTri().getY());
@@ -162,6 +163,7 @@ public class CaseService {
         ct.setNgaySinh(req.getNgaySinh());
         ct.setGioiTinh(req.getGioiTinh());
         ct.setNgayTiepXuc(req.getNgayTiepXuc());
+        ct.setNguoiBaoCao(req.getNguoiBaoCao());
         ct.setMucDoNguyCo(req.getMucDoNguyCo() != null
                 ? req.getMucDoNguyCo()
                 : CaTiepXuc.MucDoNguyCo.TRUNG_BINH);
@@ -173,5 +175,24 @@ public class CaseService {
     @Transactional
     public void deleteContact(Integer maCaTiepXuc) {
         caTiepXucRepository.deleteById(maCaTiepXuc);
+    }
+
+    @Transactional
+    public CaTiepXucResponse updateContact(Integer id, CaTiepXucRequest req) {
+        CaTiepXuc ct = caTiepXucRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ca tiếp xúc không tồn tại: " + id));
+
+        ct.setHoTen(req.getHoTen());
+        ct.setSoDienThoai(req.getSoDienThoai());
+        ct.setNgaySinh(req.getNgaySinh());
+        ct.setGioiTinh(req.getGioiTinh());
+        ct.setNgayTiepXuc(req.getNgayTiepXuc());
+        ct.setNguoiBaoCao(req.getNguoiBaoCao());
+        ct.setMucDoNguyCo(req.getMucDoNguyCo() != null
+                ? req.getMucDoNguyCo()
+                : CaTiepXuc.MucDoNguyCo.TRUNG_BINH);
+        ct.setViTri(toPoint(req.getLat(), req.getLng()));
+
+        return toContactResponse(caTiepXucRepository.save(ct));
     }
 }

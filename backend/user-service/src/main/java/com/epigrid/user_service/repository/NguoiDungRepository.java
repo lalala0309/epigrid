@@ -23,10 +23,15 @@ public interface NguoiDungRepository extends JpaRepository<NguoiDung, Integer> {
     List<NguoiDung> findAllNhanVienYTe();
 
     @Query(value = """
-                SELECT nd.maNguoiDung, nd.hoTen, nd.email, nd.trangThai, nvyt.maNhanVien
+                SELECT nd.maNguoiDung as maNguoiDung,
+                       nd.hoTen as hoTen,
+                       nd.email as email,
+                       nd.trangThai as trangThai,
+                       nvyt.maNhanVien as maNhanVien
                 FROM nguoi_dung nd
-                JOIN nhan_vien_y_te nvyt ON nd.maNguoiDung = nvyt.maNguoiDung
+                LEFT JOIN nhan_vien_y_te nvyt
+                ON nd.maNguoiDung = nvyt.maNguoiDung
                 WHERE nd.maNguoiDung = :id
             """, nativeQuery = true)
-    Optional<Object[]> findNhanVienRawById(@Param("id") Integer id);
+    Optional<NhanVienProjection> findNhanVienRawById(@Param("id") Integer id);
 }
