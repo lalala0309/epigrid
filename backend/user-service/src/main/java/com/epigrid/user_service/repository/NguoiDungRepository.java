@@ -34,4 +34,20 @@ public interface NguoiDungRepository extends JpaRepository<NguoiDung, Integer> {
                 WHERE nd.maNguoiDung = :id
             """, nativeQuery = true)
     Optional<NhanVienProjection> findNhanVienRawById(@Param("id") Integer id);
+
+    @Query(value = """
+            SELECT * FROM nguoi_dung
+            WHERE viTri IS NOT NULL
+            AND maVaiTro = 3
+            AND ST_Distance_Sphere(
+                viTri,
+                ST_SRID(POINT(:lng, :lat), 4326)
+            ) <= :radius
+            """, nativeQuery = true)
+    List<NguoiDung> findUsersNearby(
+            @Param("lat") double lat,
+            @Param("lng") double lng,
+            @Param("radius") double radius);
+
+    long count();
 }

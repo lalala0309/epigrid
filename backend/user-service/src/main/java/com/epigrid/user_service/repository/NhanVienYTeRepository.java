@@ -4,4 +4,5 @@ import com.epigrid.user_service.entity.NhanVienYTe;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface NhanVienYTeRepository extends JpaRepository<NhanVienYTe, String> {
+    long count();
 }

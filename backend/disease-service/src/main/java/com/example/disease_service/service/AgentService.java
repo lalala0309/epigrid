@@ -17,6 +17,7 @@ public class AgentService {
 
     private final TacNhanRepository repository;
     private final LoaiTacNhanRepository loaiTacNhanRepository;
+    private final TacNhanRepository tacNhanRepository;
 
     /*
      * =============================
@@ -84,6 +85,20 @@ public class AgentService {
      */
     public void deleteAgent(Integer id) {
         repository.deleteById(id);
+    }
+
+    public List<AgentResponse> getAllAgents() {
+        return tacNhanRepository.findAll()
+                .stream()
+                .map(a -> {
+                    AgentResponse dto = new AgentResponse();
+                    dto.setId(a.getMaTacNhan());
+                    dto.setName(a.getTenTacNhan());
+                    dto.setDescription(a.getMoTa());
+                    dto.setTypeId(a.getLoaiTacNhan().getMaLoaiTacNhan());
+                    return dto;
+                })
+                .toList();
     }
 
 }

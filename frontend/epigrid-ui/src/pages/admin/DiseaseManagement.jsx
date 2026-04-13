@@ -405,7 +405,7 @@ const DiseaseManagement = () => {
                 {/* Sidebar Danh sách (56px) */}
                 <aside className="w-56 bg-white border-r flex flex-col shrink-0">
                     <div className="p-3 border-b flex justify-between items-center h-10">
-                        <span className="font-bold text-slate-500 uppercase text-[10px]">Danh sách tác nhân</span>
+                        <span className="font-bold text-slate-500 uppercase text-[10px]">Danh sách Dịch bệnh</span>
                         <button onClick={() => handleOpenForm('add')} className="p-1 hover:bg-indigo-50 text-indigo-600 rounded-md transition-colors">
                             <Plus size={14} />
                         </button>

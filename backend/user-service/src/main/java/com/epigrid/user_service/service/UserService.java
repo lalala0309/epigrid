@@ -13,6 +13,7 @@ import java.util.List;
 public class UserService {
 
     private final NguoiDungRepository repo;
+    private final NhanVienYTeRepository nvytRepo;
 
     // Lấy tất cả user
     public List<UserDTO> getAllUsers() {
@@ -60,5 +61,23 @@ public class UserService {
                 u.getVaiTro().getTenVaiTro(),
                 viTri,
                 u.getTrangThai());
+    }
+
+    public List<UserDTO> getNearbyUsers(double lat, double lng, double radius) {
+
+        List<NguoiDung> users = repo.findUsersNearby(lat, lng, radius);
+
+        return users.stream().map(u -> new UserDTO(
+                u.getMaNguoiDung(),
+                u.getHoTen(),
+                u.getEmail())).toList();
+    }
+
+    public long countUsers() {
+        return repo.count();
+    }
+
+    public long countNhanVienYTe() {
+        return nvytRepo.count();
     }
 }

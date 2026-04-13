@@ -70,4 +70,24 @@ public class CaseController {
             @RequestBody CaTiepXucRequest request) {
         return ResponseEntity.ok(caseService.updateContact(contactId, request));
     }
+
+    @GetMapping("/count-case-today")
+    public long countToday() {
+        return caseService.countCaBenhHomNay();
+    }
+
+    @GetMapping("/contacts/count-contact-today")
+    public long countContactToday() {
+        return caseService.countCaTiepXucHomNay();
+    }
+
+    @GetMapping("/chart/top-diseases")
+    public ResponseEntity<?> getChart(@RequestParam int days) {
+        return ResponseEntity.ok(caseService.getTopDiseaseChart(days));
+    }
+
+    @GetMapping("/chart/disease-pie")
+    public ResponseEntity<?> getPieChart(@RequestParam int days) {
+        return ResponseEntity.ok(caseService.getDiseasePieChart(days));
+    }
 }

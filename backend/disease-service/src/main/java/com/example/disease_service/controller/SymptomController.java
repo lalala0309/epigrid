@@ -1,5 +1,6 @@
 package com.example.disease_service.controller;
 
+import com.example.disease_service.dto.SymptomRequest;
 import com.example.disease_service.dto.SymptomResponse;
 import com.example.disease_service.service.SymptomService;
 import lombok.RequiredArgsConstructor;
@@ -26,14 +27,14 @@ public class SymptomController {
     }
 
     @PostMapping
-    public SymptomResponse create(@RequestBody SymptomResponse dto) {
+    public SymptomResponse create(@RequestBody SymptomRequest dto) {
         return service.create(dto);
     }
 
     @PutMapping("/{id}")
     public SymptomResponse update(
             @PathVariable Integer id,
-            @RequestBody SymptomResponse dto) {
+            @RequestBody SymptomRequest dto) {
 
         return service.update(id, dto);
     }

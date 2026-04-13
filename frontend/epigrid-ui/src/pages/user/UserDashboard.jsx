@@ -7,9 +7,10 @@ import {
 import RadarMap from "../../components/map/RadarMap";
 import ResizablePanel from "../../components/resize/ResizablePanel";
 import AlertCard from "../../components/alert/AlertCard";
-
+import diseaseApi from "../../api/diseaseApi";
 
 const UserDashboard = () => {
+
     return (
         <div className="flex h-screen w-full bg-slate-50 font-sans text-slate-900 overflow-hidden">
 
@@ -22,7 +23,7 @@ const UserDashboard = () => {
                 {/* THÂN TRANG (GRID HÓA) */}
                 <main className="flex-1 flex overflow-hidden">
 
-                    {/* 🟡 3. STATS PANEL (300px) */}
+                    {/* STATS PANEL (300px) */}
                     <ResizablePanel
                         side="left"
                         defaultWidth={250}
@@ -82,52 +83,6 @@ const UserDashboard = () => {
                     </section>
 
                     {/* ALERT PANEL (260px) - Đã chỉnh theo style cột trái */}
-                    <ResizablePanel
-                        side="right"
-                        defaultWidth={260}
-                        min={200}
-                        max={450}
-                        className="bg-white border-l shadow-sm z-20"
-                    >
-
-                        {/* Header Cảnh báo */}
-                        <div className="p-4 border-b bg-gray-100">
-                            <div className="flex items-center gap-2 mb-4">
-                                <h2 className="font-black text-red-600 text-sm tracking-tight uppercase">cảnh báo</h2>
-                            </div>
-
-                            {/* Thông báo khẩn cấp dạng Banner nhỏ */}
-                            <div className="bg-red-600 rounded-xl p-3 text-white">
-                                <div className="flex items-center gap-2 mb-1">
-                                    <Zap size={14} fill="currentColor" />
-                                    <span className="text-[10px] font-black uppercase tracking-wider">Khẩn cấp</span>
-                                </div>
-                                <p className="text-[11px] font-bold leading-snug">Phát hiện ổ dịch Sốt xuất huyết mới trong bán kính 500m</p>
-                            </div>
-                        </div>
-
-                        {/* Danh sách Alert cuộn */}
-                        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 custom-scrollbar">
-                            <h3 className="text-[10px] font-bold text-slate-500 uppercase mb-2">Lịch sử cảnh báo</h3>
-
-                            <AlertCard
-                                title="VƯỢT NGƯỠNG AN TOÀN"
-                                desc="Số ca COVID-19 tăng lên 12 ca trong khu vực."
-                                time="10 phút trước"
-                                urgent
-                            />
-                            <AlertCard
-                                title="Ghi nhận ca bệnh mới"
-                                desc="Ghi nhận ca bệnh Mệt Xĩu cách vị trí của bạn 450m"
-                                time="1 giờ trước"
-                            />
-                            <AlertCard
-                                title="Ghi nhận ca bệnh mới"
-                                desc="Ghi nhận ca bệnh Hơi Mệt cách vị trí của bạn 200m"
-                                time="3 giờ trước"
-                            />
-                        </div>
-                    </ResizablePanel>
 
                 </main>
             </div>

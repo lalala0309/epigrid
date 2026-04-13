@@ -13,6 +13,14 @@ spring:
 #     url: ${DB_URL}
 #     username: ${DB_USER}
 #     password: ${DB_PASS}
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: kietb2204944@student.ctu.edu.vn
+    password: idrsesiljszspgyv
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
 
 
   jpa:

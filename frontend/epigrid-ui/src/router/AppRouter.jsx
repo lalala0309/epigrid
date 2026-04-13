@@ -4,6 +4,7 @@ import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import UserDashboard from "../pages/user/UserDashboard";
+import DiseaseInformation from "../pages/user/DiseaseInformation";
 import ManagerDashboard from "../pages/manager/ManagerDashboard";
 import UserManagement from "../pages/admin/UserManagement";
 import AdminLayout from "../layouts/AdminLayout";
@@ -43,6 +44,7 @@ const AppRouter = () => {
 
                 <Route path="/user" element={<UserLayout />}>
                     <Route index element={<UserDashboard />} />
+                    <Route path="disease-information" element={<DiseaseInformation />} />
                 </Route>
 
                 <Route path="/manager" element={<ManagerLayout />}>

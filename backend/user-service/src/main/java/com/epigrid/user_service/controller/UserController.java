@@ -56,4 +56,28 @@ public class UserController {
                 })
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/nearby")
+    public ResponseEntity<?> getNearby(
+            @RequestParam double lat,
+            @RequestParam double lng,
+            @RequestParam(defaultValue = "1000") double radius) {
+        try {
+            List<UserDTO> result = service.getNearbyUsers(lat, lng, radius);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/count")
+    public long countUsers() {
+        return service.countUsers();
+    }
+
+    @GetMapping("/count-nvyt")
+    public long countNhanVienYTe() {
+        return service.countNhanVienYTe();
+    }
 }

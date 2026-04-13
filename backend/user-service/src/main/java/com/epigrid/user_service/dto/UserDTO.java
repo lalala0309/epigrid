@@ -15,4 +15,10 @@ public class UserDTO {
     private String tenVaiTro;
     private String viTri;
     private String status; // frontend đang dùng status → giữ nguyên
+
+    public UserDTO(Integer id, String hoTen, String email) {
+        this.maNguoiDung = id;
+        this.email = email;
+        this.hoTen = hoTen;
+    }
 }

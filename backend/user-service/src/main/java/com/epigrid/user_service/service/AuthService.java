@@ -1,5 +1,6 @@
 package com.epigrid.user_service.service;
 
+import org.locationtech.jts.geom.*;
 import com.epigrid.user_service.dto.*;
 import com.epigrid.user_service.entity.*;
 import com.epigrid.user_service.repository.*;
@@ -31,9 +32,21 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Sai mật khẩu");
         }
 
+        // update vị trí người dùng sau mỗi lần đăng nhập
+        if (request.getLat() != null && request.getLng() != null) {
+
+            GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+
+            Point point = geometryFactory.createPoint(
+                    new Coordinate(request.getLng(), request.getLat()));
+
+            user.setViTri(point);
+            repo.save(user); // lưu lại
+        }
         String token = jwt.generateToken(
                 user.getEmail(),
-                user.getVaiTro().getTenVaiTro());
+                user.getVaiTro().getTenVaiTro(),
+                user.getHoTen());
 
         return new AuthResponse(token, user.getVaiTro().getTenVaiTro(), user.getMaNguoiDung());
     }

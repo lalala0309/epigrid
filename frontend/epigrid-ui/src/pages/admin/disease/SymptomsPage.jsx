@@ -37,19 +37,29 @@ const SymptomsPage = () => {
         setEditData({ ...selectedSymptom });
         setIsEditing(true);
     };
-
     const handleSave = async () => {
         try {
+            const payload = {
+                name: editData.name,
+                description: editData.description
+            };
+
             if (editData.id) {
-                await diseaseApi.symptoms.update(editData.id, editData);
+                await diseaseApi.symptoms.update(editData.id, payload);
             } else {
-                await diseaseApi.symptoms.create(editData);
+                await diseaseApi.symptoms.create(payload);
             }
-            await loadSymptoms();
+
+            try {
+                await loadSymptoms();
+            } catch (e) {
+                console.error("Lỗi loadSymptoms:", e);
+            }
+
             setIsEditing(false);
+
         } catch (error) {
-            console.error(error);
-            alert("Lưu dữ liệu thất bại");
+            console.error("Lỗi SAVE:", error);
         }
     };
 

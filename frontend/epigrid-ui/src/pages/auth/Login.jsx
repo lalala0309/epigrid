@@ -12,58 +12,93 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const handleLogin = async (e) => {
+        e.preventDefault();
         setError("");
 
-        e.preventDefault();
+        navigator.geolocation.getCurrentPosition(
+            async (pos) => {
+                const lat = pos.coords.latitude;
+                const lng = pos.coords.longitude;
 
-        try {
-            const res = await fetch("http://localhost:8081/api/auth/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    email: email.trim().toLowerCase(),
-                    password: password.trim()
-                })
+                try {
+                    const res = await fetch("http://localhost:8081/api/auth/login", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            email: email.trim().toLowerCase(),
+                            password: password.trim(),
+                            lat,
+                            lng
+                        })
+                    });
 
-            });
+                    if (!res.ok) {
+                        if (res.status === 401) {
+                            setError("Sai email hoặc mật khẩu");
+                        } else if (res.status === 403) {
+                            setError("Bạn không có quyền truy cập hệ thống");
+                        } else {
+                            setError("Lỗi server: " + res.status);
+                        }
+                        return;
+                    }
 
-            if (!res.ok) {
-                if (res.status === 401) {
-                    setError("Sai email hoặc mật khẩu");
-                } else if (res.status === 403) {
-                    setError("Bạn không có quyền truy cập hệ thống");
-                } else {
-                    setError("Lỗi server: " + res.status);
+                    const data = await res.json();
+
+                    // lưu JWT
+                    localStorage.setItem("token", data.token);
+                    localStorage.setItem("userId", data.userId);
+                    localStorage.setItem("role", data.role);
+
+                    // redirect
+                    switch (data.role) {
+                        case "ADMIN":
+                            navigate("/admin");
+                            break;
+                        case "MANAGER":
+                            navigate("/manager");
+                            break;
+                        default:
+                            navigate("/user");
+                    }
+
+                } catch (err) {
+                    console.error(err);
+                    setError("Server lỗi: " + err.message);
                 }
-                return;
-            }
+            },
+            async (err) => {
+                console.log("Không lấy được vị trí", err);
 
+                // fallback: login không có GPS
+                try {
+                    const res = await fetch("http://localhost:8081/api/auth/login", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            email: email.trim().toLowerCase(),
+                            password: password.trim()
+                        })
+                    });
 
-            const data = await res.json();
-            console.log("LOGIN RESPONSE:", data);
-            // lưu JWT
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("userId", data.userId);
-            localStorage.setItem("role", data.role);
+                    if (!res.ok) {
+                        setError("Đăng nhập thất bại");
+                        return;
+                    }
 
+                    const data = await res.json();
 
-            // redirect theo role
-            switch (data.role) {
-                case "ADMIN":
-                    navigate("/admin");
-                    break;
-                case "MANAGER":
-                    navigate("/manager");
-                    break;
-                default:
+                    localStorage.setItem("token", data.token);
+                    localStorage.setItem("userId", data.userId);
+                    localStorage.setItem("role", data.role);
+
                     navigate("/user");
+
+                } catch (err) {
+                    setError("Server lỗi");
+                }
             }
-
-        } catch (err) {
-            console.error(err);
-            alert("Server lỗi: " + err.message);
-
-        }
+        );
     };
 
     return (

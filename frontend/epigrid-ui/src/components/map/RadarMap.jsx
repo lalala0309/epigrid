@@ -19,30 +19,50 @@ const RadarMap = () => {
         const vectorSource = new VectorSource();
         const vectorLayer = new VectorLayer({ source: vectorSource });
 
-        const map = new Map({
-            target: mapRef.current,
-            layers: [
-                new TileLayer({ source: new OSM() }),
-                vectorLayer
-            ],
-            view: new View({
-                center: fromLonLat([105.85, 21.03]),
-                zoom: 15,
-            }),
-        });
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const center = fromLonLat([
+                    pos.coords.longitude,
+                    pos.coords.latitude
+                ]);
 
-        navigator.geolocation.getCurrentPosition((pos) => {
-            const center = fromLonLat([
-                pos.coords.longitude,
-                pos.coords.latitude
-            ]);
+                const map = new Map({
+                    target: mapRef.current,
+                    layers: [
+                        new TileLayer({ source: new OSM() }),
+                        vectorLayer
+                    ],
+                    view: new View({
+                        center: center, // ✅ dùng GPS luôn
+                        zoom: 15,
+                    }),
+                });
 
-            RadarPulse(map, vectorSource, vectorLayer, center);
-        });
+                RadarPulse(map, vectorSource, vectorLayer, center);
+            },
+            (err) => {
+                console.log("Không lấy được GPS", err);
 
-        return () => map.setTarget(null);
+                // fallback nếu user từ chối GPS
+                const fallback = fromLonLat([105.85, 21.03]);
+
+                const map = new Map({
+                    target: mapRef.current,
+                    layers: [
+                        new TileLayer({ source: new OSM() }),
+                        vectorLayer
+                    ],
+                    view: new View({
+                        center: fallback,
+                        zoom: 15,
+                    }),
+                });
+
+                RadarPulse(map, vectorSource, vectorLayer, fallback);
+            }
+        );
+
     }, []);
-
     return <div ref={mapRef} className="w-full h-full" />;
 };
 

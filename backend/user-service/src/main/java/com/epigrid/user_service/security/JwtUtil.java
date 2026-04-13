@@ -19,11 +19,12 @@ public class JwtUtil {
 
     }
 
-    public String generateToken(String email, String role) {
+    public String generateToken(String email, String role, String hoTen) {
 
         return Jwts.builder()
                 .setSubject(email)
                 .claim("role", role)
+                .claim("name", hoTen)
                 .setIssuedAt(new Date())
                 .setExpiration(
                         new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000))

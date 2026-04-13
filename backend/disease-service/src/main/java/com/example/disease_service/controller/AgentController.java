@@ -36,4 +36,9 @@ public class AgentController {
     public void delete(@PathVariable Integer id) {
         service.deleteAgent(id);
     }
+
+    @GetMapping("/getAll")
+    public List<AgentResponse> getAllAgents() {
+        return service.getAllAgents();
+    }
 }

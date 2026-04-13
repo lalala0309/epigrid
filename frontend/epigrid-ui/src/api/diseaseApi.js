@@ -58,6 +58,7 @@ const diseaseApi = {
        AGENTS (tac_nhan)
     =============================== */
     agents: {
+        getAll: () => api.get("/agents/getAll"),
 
         getByType: (typeId) =>
             api.get(`/agents/type/${typeId}`),
