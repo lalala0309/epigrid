@@ -83,7 +83,7 @@ public class CaseService {
         return r;
     }
 
-    // ─── Ca bệnh CRUD ────────────────────────────────────────────────────────
+    // Ca bệnh CRUD
 
     public List<CaBenhResponse> getAll() {
         return caBenhRepository.findAll().stream().map(this::toResponse).toList();
@@ -114,7 +114,7 @@ public class CaseService {
         cb.setViTri(toPoint(req.getLat(), req.getLng()));
         CaBenh saved = caBenhRepository.save(cb);
 
-        if (saved.getViTri() != null) {
+        if (saved.getViTri() != null && saved.getTinhTrang() == CaBenh.TinhTrang.DANG_MAC) {
 
             double lat = saved.getViTri().getY();
             double lng = saved.getViTri().getX();
@@ -178,8 +178,7 @@ public class CaseService {
         caBenhRepository.deleteById(id);
     }
 
-    // ─── Ca tiếp xúc ─────────────────────────────────────────────────────────
-
+    // Ca tiếp xúc
     public List<CaTiepXucResponse> getContacts(Integer maCaBenh) {
         return caTiepXucRepository.findByCaBenhMaCaBenh(maCaBenh)
                 .stream().map(this::toContactResponse).toList();
@@ -242,11 +241,10 @@ public class CaseService {
     public List<Map<String, Object>> getTopDiseaseChart(int days) {
 
         LocalDate startDate = LocalDate.now().minusDays(days - 1);
-
         List<Object[]> raw = caBenhRepository
                 .countCasesGroupByDiseaseAndDate(startDate);
 
-        // Map: diseaseId -> total count
+        // diseaseId -> total count
         Map<Integer, Long> totalByDisease = new HashMap<>();
 
         for (Object[] row : raw) {
@@ -356,5 +354,311 @@ public class CaseService {
         }
 
         return result;
+    }
+
+    public List<Map<String, Object>> getNearbySummary(double lat, double lng, double radius) {
+
+        List<Object[]> raw = caBenhRepository.countCasesNearby(lat, lng, radius);
+        String url = "http://localhost:8083/api/diseases";
+        DiseaseDTO[] diseases = restTemplate.getForObject(url, DiseaseDTO[].class);
+
+        Map<Integer, String> diseaseMap = Arrays.stream(diseases)
+                .collect(Collectors.toMap(DiseaseDTO::getId, DiseaseDTO::getName));
+
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        for (Object[] row : raw) {
+            Integer diseaseId = (Integer) row[0];
+            Long count = ((Number) row[1]).longValue();
+
+            Map<String, Object> item = new HashMap<>();
+            item.put("name", diseaseMap.getOrDefault(diseaseId, "Unknown"));
+            item.put("cases", count);
+
+            result.add(item);
+        }
+
+        return result;
+    }
+
+    private List<Integer> getAllChildAreaIds(Integer rootId) {
+
+        String url = "http://localhost:8082/api/areas";
+        AreaDTO[] roots = restTemplate.getForObject(url, AreaDTO[].class);
+
+        List<Integer> result = new ArrayList<>();
+
+        for (AreaDTO root : roots) {
+            collectIds(root, rootId, result);
+        }
+
+        return result;
+    }
+
+    private boolean collectIds(AreaDTO node, Integer targetId, List<Integer> result) {
+
+        if (node.getId().equals(targetId)) {
+            collectAll(node, result);
+            return true;
+        }
+
+        if (node.getChildren() != null) {
+            for (AreaDTO child : node.getChildren()) {
+                if (collectIds(child, targetId, result)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private void collectAll(AreaDTO node, List<Integer> result) {
+        result.add(node.getId());
+
+        if (node.getChildren() != null) {
+            for (AreaDTO child : node.getChildren()) {
+                collectAll(child, result);
+            }
+        }
+    }
+
+    public Map<String, Long> getTodayStatsByArea(Integer maKhuVuc, Integer diseaseId) {
+
+        LocalDate today = LocalDate.now();
+
+        List<Integer> ids = getAllChildAreaIds(maKhuVuc);
+
+        System.out.println(">>> Area IDs tìm được: " + ids);
+        System.out.println(">>> diseaseId: " + diseaseId);
+        System.out.println(">>> today: " + today);
+
+        long dangMac = caBenhRepository
+                .countByNgayPhatHienAndMaKhuVucInAndTinhTrangAndMaDichBenh(
+                        today, ids, CaBenh.TinhTrang.DANG_MAC, diseaseId);
+
+        long daKhoi = caBenhRepository
+                .countByNgayPhatHienAndMaKhuVucInAndTinhTrangAndMaDichBenh(
+                        today, ids, CaBenh.TinhTrang.DA_KHOI, diseaseId);
+
+        long tuVong = caBenhRepository
+                .countByNgayPhatHienAndMaKhuVucInAndTinhTrangAndMaDichBenh(
+                        today, ids, CaBenh.TinhTrang.TU_VONG, diseaseId);
+
+        Map<String, Long> result = new HashMap<>();
+        result.put("newCases", dangMac);
+        result.put("recovered", daKhoi);
+        result.put("deaths", tuVong);
+
+        return result;
+    }
+
+    public List<Map<String, Object>> getLineChart(
+            Integer maKhuVuc,
+            Integer diseaseId,
+            LocalDate start,
+            LocalDate end) {
+        List<Integer> areaIds = getAllChildAreaIds(maKhuVuc);
+
+        List<Object[]> raw = caBenhRepository.getChartByDateAndArea(
+                start, end, areaIds, diseaseId);
+
+        // Map date -> data
+        Map<LocalDate, Map<String, Object>> map = new TreeMap<>();
+
+        for (Object[] row : raw) {
+            LocalDate date = (LocalDate) row[0];
+            CaBenh.TinhTrang status = (CaBenh.TinhTrang) row[1];
+            Long count = (Long) row[2];
+
+            map.putIfAbsent(date, new HashMap<>());
+            Map<String, Object> item = map.get(date);
+
+            item.put("date", date.toString());
+
+            switch (status) {
+                case DANG_MAC -> item.put("cases", count);
+                case DA_KHOI -> item.put("recovered", count);
+                case TU_VONG -> item.put("deaths", count);
+            }
+        }
+
+        // fill thiếu ngày + thiếu field
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        LocalDate current = start;
+        while (!current.isAfter(end)) {
+
+            Map<String, Object> row = map.getOrDefault(current, new HashMap<>());
+
+            row.put("date", current.toString());
+            row.putIfAbsent("cases", 0);
+            row.putIfAbsent("recovered", 0);
+            row.putIfAbsent("deaths", 0);
+
+            result.add(row);
+
+            current = current.plusDays(1);
+        }
+
+        return result;
+    }
+
+    public List<Map<String, Object>> getPieChartByStatus(
+            Integer maKhuVuc,
+            Integer diseaseId,
+            LocalDate start,
+            LocalDate end) {
+        List<Integer> areaIds = getAllChildAreaIds(maKhuVuc);
+
+        List<Object[]> raw = caBenhRepository.countByStatus(
+                start, end, areaIds, diseaseId);
+
+        long dangMac = 0;
+        long daKhoi = 0;
+        long tuVong = 0;
+
+        for (Object[] row : raw) {
+            CaBenh.TinhTrang status = (CaBenh.TinhTrang) row[0];
+            Long count = (Long) row[1];
+
+            switch (status) {
+                case DANG_MAC -> dangMac = count;
+                case DA_KHOI -> daKhoi = count;
+                case TU_VONG -> tuVong = count;
+            }
+        }
+
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        result.add(Map.of(
+                "name", "Đang điều trị",
+                "value", dangMac,
+                "color", "#2563eb"));
+
+        result.add(Map.of(
+                "name", "Đã hồi phục",
+                "value", daKhoi,
+                "color", "#059669"));
+
+        result.add(Map.of(
+                "name", "Tử vong",
+                "value", tuVong,
+                "color", "#dc2626"));
+
+        return result;
+    }
+
+    public List<CaseHistoryDTO> getCaseHistoryByArea(Integer maKhuVuc) {
+
+        List<Integer> areaIds = getAllChildAreaIds(maKhuVuc);
+
+        List<CaBenh> cases = caBenhRepository.findByAreaIds(areaIds);
+
+        // gọi disease-service
+        String diseaseUrl = "http://localhost:8083/api/diseases";
+        DiseaseDTO[] diseases = restTemplate.getForObject(diseaseUrl, DiseaseDTO[].class);
+
+        Map<Integer, String> diseaseMap = Arrays.stream(diseases)
+                .collect(Collectors.toMap(DiseaseDTO::getId, DiseaseDTO::getName));
+
+        // gọi user-service (NVYT)
+        String userUrl = "http://localhost:8081/api/users/manager";
+        ManagerResponse[] users = restTemplate.getForObject(userUrl, ManagerResponse[].class);
+
+        Map<Integer, ManagerResponse> userMap = Arrays.stream(users)
+                .collect(Collectors.toMap(ManagerResponse::getMaNguoiDung, u -> u));
+
+        List<CaseHistoryDTO> result = new ArrayList<>();
+
+        for (CaBenh c : cases) {
+
+            CaseHistoryDTO dto = new CaseHistoryDTO();
+
+            dto.setCaseId(c.getMaBenhNhan());
+            dto.setDate(c.getNgayPhatHien().toString());
+            dto.setType("Ca nhiễm");
+
+            // disease
+            dto.setDisease(diseaseMap.getOrDefault(c.getMaDichBenh(), "Unknown"));
+
+            // user
+            ManagerResponse user = userMap.get(c.getNguoiBaoCao());
+
+            if (user != null) {
+                dto.setStaffName(user.getHoTen());
+                dto.setStaffId(user.getMaNhanVien());
+            } else {
+                dto.setStaffName("Không rõ");
+                dto.setStaffId("N/A");
+            }
+
+            result.add(dto);
+        }
+
+        return result;
+    }
+
+    public List<Map<String, Object>> getDiseaseStatsByArea(Integer maKhuVuc) {
+
+        List<Integer> areaIds = getAllChildAreaIds(maKhuVuc);
+
+        List<Object[]> raw = caBenhRepository.countByDiseaseAndArea(areaIds);
+
+        // gọi disease-service
+        String url = "http://localhost:8083/api/diseases";
+        DiseaseDTO[] diseases = restTemplate.getForObject(url, DiseaseDTO[].class);
+
+        Map<Integer, String> diseaseMap = Arrays.stream(diseases)
+                .collect(Collectors.toMap(DiseaseDTO::getId, DiseaseDTO::getName));
+
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        for (Object[] row : raw) {
+            Integer diseaseId = (Integer) row[0];
+            Long count = (Long) row[1];
+
+            Map<String, Object> item = new HashMap<>();
+            item.put("name", diseaseMap.getOrDefault(diseaseId, "Unknown"));
+            item.put("cases", count);
+
+            result.add(item);
+        }
+
+        return result;
+    }
+
+    public List<Map<String, Object>> getTodayCasesByArea(Integer maKhuVuc) {
+
+        List<Integer> areaIds = getAllChildAreaIds(maKhuVuc);
+
+        List<CaBenh> cases = caBenhRepository.findTodayCasesByAreaIds(
+                areaIds, LocalDate.now());
+
+        // Gọi disease-service lấy tên bệnh
+        String url = "http://localhost:8083/api/diseases";
+        DiseaseDTO[] diseases = restTemplate.getForObject(url, DiseaseDTO[].class);
+
+        Map<Integer, String> diseaseMap = Arrays.stream(diseases)
+                .collect(Collectors.toMap(DiseaseDTO::getId, DiseaseDTO::getName));
+
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        for (CaBenh c : cases) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("maBenhNhan", c.getMaBenhNhan());
+            item.put("hoTen", c.getHoTen());
+            item.put("disease", diseaseMap.getOrDefault(c.getMaDichBenh(), "Unknown"));
+            item.put("tinhTrang", c.getTinhTrang().name());
+            item.put("ngayPhatHien", c.getNgayPhatHien().toString());
+            result.add(item);
+        }
+
+        return result;
+    }
+
+    public boolean isUserUsed(Integer userId) {
+        return caBenhRepository.existsByNguoiBaoCao(userId)
+                || caTiepXucRepository.existsByNguoiBaoCao(userId);
     }
 }

@@ -5,6 +5,7 @@ import com.epigrid.user_service.dto.*;
 import com.epigrid.user_service.entity.*;
 import com.epigrid.user_service.repository.*;
 import com.epigrid.user_service.security.*;
+import com.epigrid.user_service.config.*;
 import lombok.*;
 
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,6 @@ public class AuthService {
     public AuthResponse login(LoginRequest request) {
 
         String email = request.getEmail().trim().toLowerCase();
-
         NguoiDung user = repo.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Email không tồn tại"));
 
@@ -34,14 +34,13 @@ public class AuthService {
 
         // update vị trí người dùng sau mỗi lần đăng nhập
         if (request.getLat() != null && request.getLng() != null) {
-
             GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
 
             Point point = geometryFactory.createPoint(
                     new Coordinate(request.getLng(), request.getLat()));
 
             user.setViTri(point);
-            repo.save(user); // lưu lại
+            repo.save(user);
         }
         String token = jwt.generateToken(
                 user.getEmail(),
@@ -51,7 +50,7 @@ public class AuthService {
         return new AuthResponse(token, user.getVaiTro().getTenVaiTro(), user.getMaNguoiDung());
     }
 
-    /* ================= REGISTER (THÊM MỚI) ================= */
+    /* Đăng ký mới */
     public void register(RegisterRequest request) {
 
         String email = request.getEmail().trim().toLowerCase();
@@ -69,7 +68,7 @@ public class AuthService {
                 .email(email)
                 .password(encoder.encode(request.getPassword()))
                 .vaiTro(role)
-                .viTri(null) // chưa cần vị trí
+                .viTri(null)
                 .build();
 
         repo.save(user);

@@ -30,7 +30,7 @@ const CaseLocationMap = ({ selectedArea, areaColor, lat, lng, contacts }) => {
     const markerSourceRef = useRef(null);
     const markerLayerRef = useRef(null);
 
-    /* ================= INIT MAP ================= */
+    /* Khởi tạo map */
     useEffect(() => {
 
         areaSourceRef.current = new VectorSource();
@@ -38,7 +38,6 @@ const CaseLocationMap = ({ selectedArea, areaColor, lat, lng, contacts }) => {
         markerSourceRef.current = new VectorSource();
 
         contactSourceRef.current = new VectorSource();
-
         contactLayerRef.current = new VectorLayer({
             source: contactSourceRef.current,
             style: new Style({

@@ -23,7 +23,7 @@ const MapPicker = ({ lat, lng, onChange, selectedArea }) => {
     const areaSource = useRef(new VectorSource());
     const maskSource = useRef(new VectorSource());
 
-    /* ================= INIT MAP ================= */
+    /* Khởi tạo map */
     useEffect(() => {
 
         const markerLayer = new VectorLayer({

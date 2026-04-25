@@ -54,4 +54,8 @@ public class AreaController {
         return ResponseEntity.ok(area);
     }
 
+    @GetMapping("/check-user/{userId}")
+    public boolean checkUserAssigned(@PathVariable Integer userId) {
+        return areaService.isUserAssigned(userId);
+    }
 }

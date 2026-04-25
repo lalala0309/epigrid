@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8084/api/cases";
+const API_URL = "http://localhost:8080/api/cases";
 
 const api = axios.create({
     baseURL: API_URL,
@@ -9,7 +9,6 @@ const api = axios.create({
 
 const caseApi = {
 
-    // ─── Ca bệnh ─────────────────────────────────────────────────
     cases: {
         getAll: () => api.get(""),
         getById: (id) => api.get(`/${id}`),
@@ -18,7 +17,6 @@ const caseApi = {
         delete: (id) => api.delete(`/${id}`),
     },
 
-    // ─── Ca tiếp xúc ─────────────────────────────────────────────
     contacts: {
         getAll: (caseId) => api.get(`/${caseId}/contacts`),
         add: (caseId, data) => api.post(`/${caseId}/contacts`, data),

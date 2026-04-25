@@ -12,4 +12,6 @@ public interface PhanCongNhanVienRepository
     void deleteByMaKhuVuc(Integer maKhuVuc);
 
     List<PhanCongNhanVien> findAll();
+
+    boolean existsByMaNguoiDung(Integer userId);
 }

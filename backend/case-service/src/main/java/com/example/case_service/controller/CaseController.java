@@ -6,7 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.time.LocalDate;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/cases")
@@ -89,5 +90,77 @@ public class CaseController {
     @GetMapping("/chart/disease-pie")
     public ResponseEntity<?> getPieChart(@RequestParam int days) {
         return ResponseEntity.ok(caseService.getDiseasePieChart(days));
+    }
+
+    @GetMapping("/nearby-summary")
+    public List<Map<String, Object>> getNearbySummary(
+            @RequestParam double lat,
+            @RequestParam double lng,
+            @RequestParam(defaultValue = "1000") double radius) {
+        return caseService.getNearbySummary(lat, lng, radius);
+    }
+
+    @GetMapping("/stats/today")
+    public ResponseEntity<?> getTodayStats(
+            @RequestParam Integer maKhuVuc,
+            @RequestParam Integer diseaseId) {
+
+        return ResponseEntity.ok(
+                caseService.getTodayStatsByArea(maKhuVuc, diseaseId));
+    }
+
+    @GetMapping("/chart/line")
+    public ResponseEntity<?> getLineChart(
+            @RequestParam Integer maKhuVuc,
+            @RequestParam Integer diseaseId,
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+        return ResponseEntity.ok(
+                caseService.getLineChart(
+                        maKhuVuc,
+                        diseaseId,
+                        LocalDate.parse(startDate),
+                        LocalDate.parse(endDate)));
+    }
+
+    @GetMapping("/chart/status-pie")
+    public ResponseEntity<?> getStatusPie(
+            @RequestParam Integer maKhuVuc,
+            @RequestParam Integer diseaseId,
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+        return ResponseEntity.ok(
+                caseService.getPieChartByStatus(
+                        maKhuVuc,
+                        diseaseId,
+                        LocalDate.parse(startDate),
+                        LocalDate.parse(endDate)));
+    }
+
+    @GetMapping("/history")
+    public ResponseEntity<?> getHistory(
+            @RequestParam Integer maKhuVuc) {
+        return ResponseEntity.ok(
+                caseService.getCaseHistoryByArea(maKhuVuc));
+    }
+
+    @GetMapping("/disease-stats")
+    public ResponseEntity<?> getDiseaseStats(
+            @RequestParam Integer maKhuVuc) {
+
+        return ResponseEntity.ok(
+                caseService.getDiseaseStatsByArea(maKhuVuc));
+    }
+
+    @GetMapping("/today-cases")
+    public ResponseEntity<?> getTodayCases(
+            @RequestParam Integer maKhuVuc) {
+        return ResponseEntity.ok(
+                caseService.getTodayCasesByArea(maKhuVuc));
+    }
+
+    @GetMapping("/check-user/{userId}")
+    public boolean checkUserUsed(@PathVariable Integer userId) {
+        return caseService.isUserUsed(userId);
     }
 }

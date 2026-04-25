@@ -5,7 +5,6 @@ import {
 } from 'lucide-react';
 import diseaseApi from "../../api/diseaseApi";
 
-// --- COMPONENT POP-UP CHỌN NHIỀU NÂNG CAO (Style Bo góc 2xl) ---
 const MultiSelectPopup = ({
     label,
     icon,
@@ -144,8 +143,6 @@ const DiseaseManagement = () => {
         const fetchAgentTypes = async () => {
             try {
                 const res = await diseaseApi.agentTypes.getAll();
-
-                // map về format UI
                 const mapped = res.data.map(item => ({
                     id: item.id,
                     name: item.name,
@@ -169,14 +166,12 @@ const DiseaseManagement = () => {
 
                 for (let type of agentTypes) {
                     const res = await diseaseApi.agents.getByType(type.id);
-
                     const mapped = res.data.map(a => ({
                         id: a.id,
                         name: a.name,
                         typeId: a.typeId,
-                        typeName: type.name // gắn tên loại để filter UI
+                        typeName: type.name
                     }));
-
                     allAgents = [...allAgents, ...mapped];
                 }
 
@@ -377,10 +372,6 @@ const DiseaseManagement = () => {
                     onClose={() => setActivePopup(null)}
                 />
             )}
-
-
-
-
 
             <div className="flex flex-1 min-h-0">
                 {/* Sidebar Phân loại (48px) */}

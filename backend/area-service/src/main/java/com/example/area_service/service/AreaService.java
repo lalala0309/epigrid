@@ -97,4 +97,8 @@ public class AreaService {
             phanCongNhanVienRepository.save(pc);
         }
     }
+
+    public boolean isUserAssigned(Integer userId) {
+        return phanCongNhanVienRepository.existsByMaNguoiDung(userId);
+    }
 }

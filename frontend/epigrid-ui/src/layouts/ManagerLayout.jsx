@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 import { Outlet, NavLink, useLocation } from "react-router-dom";
 import logo from "../assets/logo.png";
 import {
-    Users, Activity, AlertTriangle, Map, ShieldAlert,
+    Users, User, Activity, AlertTriangle, Map, ShieldAlert,
     Search, Bell, LogOut, ChevronDown, ChevronRight, LayoutGrid
 } from "lucide-react";
 import LogoutButton from "../components/LogoutButton";
@@ -20,8 +21,22 @@ const subLinkStyle = ({ isActive }) =>
         : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"}`;
 
 
-const ManagerLayout = () => {
 
+const ManagerLayout = () => {
+    const [user, setUser] = useState(null);
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        if (token) {
+            const decoded = jwtDecode(token);
+
+            setUser({
+                name: decoded.name,
+                email: decoded.sub,
+                role: decoded.role
+            });
+        }
+    }, []);
     return (
         <div className="flex h-screen bg-[#F8FAFC] font-sans text-gray-800">
 
@@ -42,7 +57,7 @@ const ManagerLayout = () => {
                         {({ isActive }) => (
                             <>
                                 <Activity size={18} strokeWidth={isActive ? 2.5 : 2} />
-                                <span className="text-[13px] whitespace-nowrap">Dashboard</span>
+                                <span className="text-[13px] whitespace-nowrap">Trang chủ</span>
                             </>
                         )}
                     </NavLink>
@@ -51,21 +66,10 @@ const ManagerLayout = () => {
                         {({ isActive }) => (
                             <>
                                 <Users size={18} strokeWidth={isActive ? 2.5 : 2} />
-                                <span className="text-[13px] whitespace-nowrap">Quản lý Người dùng</span>
+                                <span className="text-[13px] whitespace-nowrap">Quản lý Ca bệnh</span>
                             </>
                         )}
                     </NavLink>
-
-
-
-                    {/* Vùng dịch & Cảnh báo */}
-                    {/* <a
-                        href="#"
-                        className="flex items-center gap-3 px-3 py-3 rounded-xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200"
-                    >
-                        <AlertTriangle size={18} strokeWidth={2} />
-                        <span className="text-[13px] whitespace-nowrap">Vùng dịch & Cảnh báo</span>
-                    </a> */}
                 </nav>
 
                 <LogoutButton />
@@ -76,24 +80,33 @@ const ManagerLayout = () => {
 
                 {/* TOPBAR */}
                 <header className="h-14 bg-[#1E3A8A] flex items-center justify-between px-6 z-10 shadow-lg flex-none">
-                    <div className="relative w-96">
+                    {/* <div className="relative w-96">
                         <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                             <Search size={16} className="text-blue-200" />
                         </span>
                         <input className="block w-full pl-10 pr-3 py-2 bg-blue-900/40 border border-blue-700/50 rounded-lg text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all text-xs" placeholder="Tìm kiếm dữ liệu hệ thống..." type="text" />
-                    </div>
+                    </div> */}
                     <div className="flex items-center">
-                        <button className="p-2 text-blue-100 hover:bg-blue-800 rounded-full relative transition-colors">
+                        {/* <button className="p-2 text-blue-100 hover:bg-blue-800 rounded-full relative transition-colors">
                             <Bell size={18} />
                             <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-[#1E3A8A]"></span>
-                        </button>
+                        </button> */}
                         <div className="flex items-center gap-3 pl-5 border-l border-blue-700/50">
-                            <div className="text-right">
-                                <p className="text-xs font-semibold text-white leading-tight">Admin Manager</p>
-                                <p className="text-[10px] text-blue-200 font-medium">Quản trị viên</p>
+                            <div className="w-8 h-8 rounded-full border-2 border-blue-400 bg-blue-50 flex items-center justify-center">
+                                <User size={16} className="text-[#1E3A8A]" />
                             </div>
-                            <div className="w-8 h-8 rounded-full border-2 border-blue-400 p-0.5">
-                                <img src="https://ui-avatars.com/api/?name=Admin&background=fff&color=1E3A8A" className="w-full h-full rounded-full shadow-sm" alt="avatar" />
+                            <div className="text-left">
+                                <p className="text-xs font-semibold text-white leading-tight">
+                                    {user?.name || "Loading..."}
+                                </p>
+
+                                <p className="text-[10px] text-blue-200 font-medium">
+                                    {user?.role === "ADMIN"
+                                        ? "Quản trị viên"
+                                        : user?.role === "MANAGER"
+                                            ? "Quản lý"
+                                            : "Người dùng"}
+                                </p>
                             </div>
                         </div>
                     </div>

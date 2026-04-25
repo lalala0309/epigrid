@@ -33,7 +33,7 @@ const RadarMap = () => {
                         vectorLayer
                     ],
                     view: new View({
-                        center: center, // ✅ dùng GPS luôn
+                        center: center,
                         zoom: 15,
                     }),
                 });

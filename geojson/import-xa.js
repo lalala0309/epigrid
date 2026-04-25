@@ -1,6 +1,7 @@
 const fs = require("fs");
 const mysql = require("mysql2/promise");
 
+// Hàm chuẩn hoá dữ liệu
 function normalizeName(name) {
     return name
         .normalize("NFC")
@@ -12,6 +13,7 @@ function normalizeName(name) {
 
 async function run() {
 
+    // Kết nổi cơ sở dữ liệu
     const conn = await mysql.createConnection({
         host: "localhost",
         user: "epigrid_admin",
@@ -19,18 +21,19 @@ async function run() {
         database: "db_khu_vuc"
     });
 
+    // Đọc và phần tích dữ liệu, chuẩn sang object để xử lý
     const raw = fs.readFileSync("./gadm41_VNM_3.json", "utf8");
     const geo = JSON.parse(raw);
 
     for (const feature of geo.features) {
-
         const props = feature.properties;
 
+        // mã huyện, mã xã và tên xã mỗi lần lặp
         const districtGADM = props.GID_2;  // ví dụ: VNM.1.1_1
         const wardGADM = props.GID_3;      // ví dụ: VNM.1.1.3_1
         const ten = normalizeName(props.NAME_3);
 
-        // 1️⃣ tìm huyện cha
+        // Tìm huyện cha dùng làm maKhuVuc cho xã
         const [rows] = await conn.execute(
             `SELECT maKhuVuc 
              FROM khu_vuc 
@@ -38,6 +41,7 @@ async function run() {
             [districtGADM]
         );
 
+        // Xử lý khi không tìm thấy huyện
         if (rows.length === 0) {
             console.log("Không tìm thấy huyện:", districtGADM);
             continue;
@@ -45,7 +49,7 @@ async function run() {
 
         const parentId = rows[0].maKhuVuc;
 
-        // 2️⃣ insert xã
+        // insert xã
         await conn.execute(
             `INSERT INTO khu_vuc 
              (maGADM, tenKhuVuc, capDo, maKhuVucCha)

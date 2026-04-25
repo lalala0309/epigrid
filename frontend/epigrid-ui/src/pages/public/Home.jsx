@@ -45,15 +45,15 @@ const Home = () => {
                     <span className="text-blue-600">Dịch tễ Cộng đồng</span>
                 </h2>
                 <p className="mt-6 text-lg text-slate-500 max-w-2xl mx-auto font-medium">
-                    EpiGrid cung cấp giải pháp bản đồ số và dữ liệu thời gian thực giúp quản lý,
-                    cảnh báo và ngăn chặn sự lây lan của các loại dịch bệnh một cách hiệu quả.
+                    EpiGrid cung cấp giải pháp bản đồ số và dữ liệu giúp quản lý và
+                    cảnh báo sự lây lan của các loại dịch bệnh.
                 </p>
             </header>
 
             {/* Risk Levels Section (Dựa trên gợi ý layout màu của bạn) */}
 
             {/* Features Section */}
-            <section className="bg-white py-20">
+            <section className="bg-white py-8">
                 <div className="max-w-6xl mx-auto px-8 grid grid-cols-1 md:grid-cols-3 gap-12">
                     <div className="space-y-4">
                         <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
@@ -61,7 +61,7 @@ const Home = () => {
                         </div>
                         <h4 className="text-xl font-bold text-slate-800">Bản đồ số hóa</h4>
                         <p className="text-slate-500 text-sm leading-relaxed">
-                            Hiển thị trực quan các điểm nóng dịch tễ trên nền tảng bản đồ tương tác với độ chính xác cao.
+                            Hiển thị trực quan các ca nhiễm trên nền tảng bản đồ tương tác với độ chính xác cao.
                         </p>
                     </div>
                     <div className="space-y-4">
@@ -77,16 +77,16 @@ const Home = () => {
                         <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center">
                             <i className="bi bi-shield-check text-2xl"></i>
                         </div>
-                        <h4 className="text-xl font-bold text-slate-800">Quản lý an toàn</h4>
+                        <h4 className="text-xl font-bold text-slate-800">Cảnh báo</h4>
                         <p className="text-slate-500 text-sm leading-relaxed">
-                            Bảo mật dữ liệu tuyệt đối và phân quyền người dùng chặt chẽ giữa quản trị viên và nhân viên y tế.
+                            Gửi mail cảnh báo dịch bệnh trong khu vực khi có cập nhật mới về ca nhiễm
                         </p>
                     </div>
                 </div>
             </section>
 
             {/* Footer */}
-            <footer className="py-10 text-center text-slate-400 text-xs font-medium uppercase tracking-widest">
+            <footer className="py-5 text-center text-slate-400 text-xs font-medium uppercase tracking-widest">
                 &copy; 2026 EpiGrid System - Quản lý dịch tễ cộng đồng
             </footer>
         </div>

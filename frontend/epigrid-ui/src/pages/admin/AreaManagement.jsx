@@ -58,13 +58,13 @@ const AreaManagement = () => {
     }, [selectedArea]);
 
     const handleAssignStaff = (staff) => {
-        // Xóa bên sẵn sàng, thêm vào danh sách phân công
+        // Xóa bên sẵn sàng thêm vào danh sách phân công
         setAvailableStaff(prev => prev.filter(s => s.maNguoiDung !== staff.maNguoiDung));
         setStaffOfArea(prev => [...prev, staff]);
     };
 
     const handleUnassignStaff = (staff) => {
-        // Xóa bên phân công, trả về danh sách sẵn sàng
+        // Xóa bên phân côn trả về danh sách sẵn sàng
         setStaffOfArea(prev => prev.filter(s => s.maNguoiDung !== staff.maNguoiDung));
         setAvailableStaff(prev => [...prev, staff]);
     };
@@ -103,7 +103,7 @@ const AreaManagement = () => {
 
     return (
         <div className="flex h-full flex bg-[#F3F4F6] text-[12px] antialiased text-gray-700">
-            {/* 1. SIDEBAR TRÁI */}
+            {/* sidebar trái */}
             <aside className="w-60 h-full bg-white border-r border-gray-200 flex flex-col flex-none shadow-sm">
                 <div className="p-3 border-b border-gray-100 bg-gray-50/50">
                     <h2 className="font-bold text-gray-800 flex items-center gap-2">
@@ -121,12 +121,12 @@ const AreaManagement = () => {
                 </div>
             </aside>
 
-            {/* 2. NỘI DUNG CHÍNH */}
+            {/*bản đồ chính */}
             <main className="flex-1 relative bg-slate-200 overflow-hidden">
                 <OpenLayerMap selectedArea={selectedArea} />
             </main>
 
-            {/* 3. BẢNG NHÂN VIÊN SẴN SÀNG */}
+            {/* nhân viên sẵn sàng */}
             {isAssigning && selectedArea && (
                 <ResizablePanel side="right" defaultWidth={260} className="bg-white border-l border-gray-200 flex-none z-10 shadow-lg">
                     <div className="h-full flex flex-col">
@@ -162,7 +162,7 @@ const AreaManagement = () => {
                 </ResizablePanel>
             )}
 
-            {/* 4. BẢNG CHI TIẾT */}
+            {/* bảng chi tiết */}
             {selectedArea && (
                 <ResizablePanel side="right" defaultWidth={250} className="bg-white border-l border-gray-200 flex-none z-20 shadow-xl">
                     <div className="h-full flex flex-col">
@@ -182,7 +182,7 @@ const AreaManagement = () => {
                                     </h3>
                                     <div className="mb-1">{renderLevelBadge(selectedArea.level)}</div>
                                 </div>
-                                <div className="px-4 pb-2 grid grid-cols-2 gap-2 text-center">
+                                {/* <div className="px-4 pb-2 grid grid-cols-2 gap-2 text-center">
                                     <div className="p-2 rounded-lg border border-gray-100 bg-gray-50/30">
                                         <p className="text-[9px] text-gray-400 font-bold uppercase">Ngưỡng</p>
                                         {isEditingLimit ? (
@@ -208,7 +208,7 @@ const AreaManagement = () => {
                                             <Settings size={14} />Cài đặt ngưỡng
                                         </button>
                                     )}
-                                </div>
+                                </div> */}
                                 <div className="px-4 pb-4">
                                     {selectedArea.level === 'XA' ? (
                                         <button onClick={() => setIsAssigning(true)} className="w-full py-2.5 bg-[#1E3A8A] text-white rounded-lg font-bold text-[14px] shadow hover:bg-blue-800 transition-all flex items-center justify-center gap-2">

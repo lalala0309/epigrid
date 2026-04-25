@@ -36,6 +36,7 @@ public class UserController {
                     dto.setHoTen(n.getHoTen());
                     dto.setEmail(n.getEmail());
                     dto.setTrangThai(n.getTrangThai());
+                    dto.setMaNhanVien(n.getMaNhanVien());
                     return dto;
                 })
                 .toList();
@@ -79,5 +80,20 @@ public class UserController {
     @GetMapping("/count-nvyt")
     public long countNhanVienYTe() {
         return service.countNhanVienYTe();
+    }
+
+    @PutMapping("/{id}/role")
+    public ResponseEntity<?> updateRole(
+            @PathVariable Integer id,
+            @RequestBody UpdateRoleRequest req) {
+
+        service.updateRole(id, req);
+        return ResponseEntity.ok("Cập nhật thành công");
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Integer id) {
+        service.deleteUser(id);
+        return ResponseEntity.ok("Xóa thành công");
     }
 }

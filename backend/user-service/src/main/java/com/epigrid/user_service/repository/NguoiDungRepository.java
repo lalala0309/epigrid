@@ -16,11 +16,17 @@ public interface NguoiDungRepository extends JpaRepository<NguoiDung, Integer> {
     boolean existsByEmailIgnoreCase(String email);
 
     @Query(value = """
-            SELECT *
-            FROM nguoi_dung
-            WHERE maVaiTro = 2;
-                """, nativeQuery = true)
-    List<NguoiDung> findAllNhanVienYTe();
+                SELECT nd.maNguoiDung,
+                       nd.hoTen,
+                       nd.email,
+                       nd.trangThai,
+                       nvyt.maNhanVien
+                FROM nguoi_dung nd
+                LEFT JOIN nhan_vien_y_te nvyt
+                    ON nd.maNguoiDung = nvyt.maNguoiDung
+                WHERE nd.maVaiTro = 2
+            """, nativeQuery = true)
+    List<NhanVienProjection> findAllNhanVienYTe();
 
     @Query(value = """
                 SELECT nd.maNguoiDung as maNguoiDung,

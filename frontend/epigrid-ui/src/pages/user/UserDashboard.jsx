@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import {
     LayoutDashboard, MapPin, Bell, User, LogOut,
     Search, ShieldCheck, AlertTriangle, Activity,
@@ -6,10 +7,67 @@ import {
 } from "lucide-react";
 import RadarMap from "../../components/map/RadarMap";
 import ResizablePanel from "../../components/resize/ResizablePanel";
-import AlertCard from "../../components/alert/AlertCard";
-import diseaseApi from "../../api/diseaseApi";
+
 
 const UserDashboard = () => {
+    const [diseases, setDiseases] = useState([]);
+    const getRiskLevel = (total) => {
+        if (total <= 3) return { label: "AN TOÀN", color: "green" };
+        if (total <= 10) return { label: "NGUY CƠ THẤP", color: "yellow" };
+        if (total <= 20) return { label: "CẢNH BÁO", color: "orange" };
+        return { label: "NGUY HIỂM", color: "red" };
+    };
+    const [risk, setRisk] = useState({ label: "AN TOÀN", color: "green" });
+    const riskConfig = {
+        green: {
+            bg: "bg-green-50",
+            border: "border-green-200",
+            text: "text-green-700",
+            iconBg: "bg-green-500",
+        },
+        yellow: {
+            bg: "bg-yellow-50",
+            border: "border-yellow-200",
+            text: "text-yellow-700",
+            iconBg: "bg-yellow-500",
+        },
+        orange: {
+            bg: "bg-orange-50",
+            border: "border-orange-200",
+            text: "text-orange-700",
+            iconBg: "bg-orange-500",
+        },
+        red: {
+            bg: "bg-red-50",
+            border: "border-red-200",
+            text: "text-red-700",
+            iconBg: "bg-red-500",
+        }
+    };
+
+    const config = riskConfig[risk.color];
+
+    useEffect(() => {
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            const res = await axios.get(
+                `http://localhost:8080/api/cases/nearby-summary?lat=${lat}&lng=${lng}&radius=1000`
+            );
+
+            setDiseases(res.data);
+
+            // tính tổng ca
+            const total = res.data.reduce((sum, d) => sum + d.cases, 0);
+
+            // set level
+            setRisk(getRiskLevel(total));
+        });
+    }, []);
+
+
+
+
 
     return (
         <div className="flex h-screen w-full bg-slate-50 font-sans text-slate-900 overflow-hidden">
@@ -17,9 +75,6 @@ const UserDashboard = () => {
 
             {/* MAIN CONTENT AREA */}
             <div className="flex-1 flex flex-col min-w-0">
-
-
-
                 {/* THÂN TRANG (GRID HÓA) */}
                 <main className="flex-1 flex overflow-hidden">
 
@@ -35,25 +90,26 @@ const UserDashboard = () => {
                         {/* Header & Stats (Cố định phía trên) */}
                         <div className="p-4 border-b bg-slate-50/30">
                             {/* A. Trạng thái tổng quan */}
-                            <div className="bg-emerald-50 border border-blue-100 rounded-sm p-4 mb-6 text-center shadow-sm">
-                                <div className="inline-flex p-3 bg-blue-500 rounded-full text-white mb-2 shadow-lg shadow-blue-200">
+                            <div className={`${config.bg} ${config.border} border rounded-sm p-4 mb-6 text-center shadow-sm`}>
+                                <div className={`inline-flex p-3 ${config.iconBg} rounded-full text-white mb-2 shadow-lg`}>
+
                                     <ShieldCheck size={20} />
                                 </div>
-                                <h2 className="text-sm font-extrabold text-blue-700 leading-tight pb-1">AN TOÀN</h2>
+                                <h2 className={`text-sm font-extrabold ${config.text}`}>
+                                    {risk.label}
+                                </h2>
                                 {/* <p className="text-[10px] text-blue-800 mt-1 uppercase font-bold tracking-wide">Bán kính 1km không có ổ dịch</p> */}
                             </div>
 
                             {/* B. Thống kê nhanh */}
-                            <h3 className="text-[10px] font-bold text-slate-600 uppercase mb-3">Khu vực của bạn</h3>
+                            {/* <h3 className="text-[10px] font-bold text-slate-600 uppercase mb-3">Khu vực của bạn</h3>
                             <div className="grid grid-cols-2 gap-2">
-                                {/* <StatCard label="Gần nhất" value="450m" sub="Sốt xuất huyết" /> */}
                                 <StatCard label="Số ổ dịch" value="03" sub="Trong khu vực" />
                                 <StatCard label="Mức độ" value="CAO" sub="Cảnh báo loại 1" color="text-orange-500" />
-                                {/* <StatCard label="Cập nhật" value="5p" sub="Trước đó" /> */}
-                            </div>
+                            </div> */}
                         </div>
 
-                        {/*  DANH SÁCH CHI TIẾT (Khu vực cuộn độc lập) */}
+                        {/*  Danh sách chi tiết trong khu vực */}
                         <div className="flex-1 flex flex-col min-h-0">
                             <div className="px-4 py-3 flex items-center justify-between bg-white sticky top-0 z-10">
                                 <h3 className="text-[12px] font-bold text-slate-600">Ca nhiễm trong khu vực của bạn</h3>
@@ -62,11 +118,14 @@ const UserDashboard = () => {
 
                             {/* Container cuộn */}
                             <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-1 custom-scrollbar">
-                                <DiseaseItem type="Sốt xuất huyết" distance="450m" level="red" cases={12} />
-                                <DiseaseItem type="COVID-19" distance="900m" level="red" cases={3} />
-                                <DiseaseItem type="Tả" distance="1.2km" level="red" cases={1} />
-                                <DiseaseItem type="Thủy đậu" distance="1.5km" level="red" cases={5} />
-                                <DiseaseItem type="Sởi" distance="1.8km" level="red" cases={2} />
+                                {diseases.map((d, index) => (
+                                    <DiseaseItem
+                                        key={index}
+                                        type={d.name}
+                                        cases={d.cases}
+                                        level="red"
+                                    />
+                                ))}
                             </div>
                         </div>
                     </ResizablePanel>
@@ -75,15 +134,8 @@ const UserDashboard = () => {
                     {/* MAP (Center - Flex 1) */}
                     <section className="flex-1 relative bg-slate-200">
                         <RadarMap />
-                        {/* Overlay Badge cho Map */}
-                        {/* <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1.5 rounded-lg shadow-sm border text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                            Live Radar Tracking
-                        </div> */}
+
                     </section>
-
-                    {/* ALERT PANEL (260px) - Đã chỉnh theo style cột trái */}
-
                 </main>
             </div>
         </div>
@@ -133,7 +185,5 @@ const DiseaseItem = ({ type, distance, level, cases }) => {
         </div>
     );
 };
-
-
 
 export default UserDashboard;

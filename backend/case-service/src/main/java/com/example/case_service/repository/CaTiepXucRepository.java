@@ -14,4 +14,6 @@ public interface CaTiepXucRepository extends JpaRepository<CaTiepXuc, Integer> {
     void deleteByCaBenhMaCaBenh(Integer maCaBenh);
 
     long countByNgayTiepXuc(LocalDate ngayTiepXuc);
+
+    boolean existsByNguoiBaoCao(Integer userId);
 }

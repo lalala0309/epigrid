@@ -15,7 +15,7 @@ import MapPicker from "../../components/map/MapPicker";
 import CaseLocationMap from '../../components/map/CaseLocationMap';
 import CaseListMap from '../../components/map/CaseListMap';
 
-// ─── Badge trạng thái ────────────────────────────────────────────────────────
+// trạng thái
 const StatusBadge = ({ status }) => {
     const map = {
         'DANG_MAC': 'bg-amber-50 text-amber-700 border-amber-100',
@@ -34,7 +34,7 @@ const StatusBadge = ({ status }) => {
     );
 };
 
-// ─── Badge mức độ nguy cơ ─────────────────────────────────────────────────────
+// Mức độ nguy hiểm
 const RiskBadge = ({ risk }) => {
     const map = {
         'CAO': 'bg-red-50 text-red-700 border-red-100',
@@ -49,7 +49,7 @@ const RiskBadge = ({ risk }) => {
     );
 };
 
-// ─── Section header ───────────────────────────────────────────────────────────
+// header
 const SectionHead = ({ icon: Icon, label }) => (
     <div className="flex items-center gap-1.5 px-4 py-2 bg-slate-50 border-b border-slate-100">
         {Icon && <Icon size={11} className="text-slate-400" />}
@@ -57,7 +57,7 @@ const SectionHead = ({ icon: Icon, label }) => (
     </div>
 );
 
-// ─── Field hiển thị ───────────────────────────────────────────────────────────
+// hiển thị
 const Field = ({ label, value, className = '' }) => (
     <div className={className}>
         <span className="text-[9px] text-slate-400 uppercase font-bold block mb-1">{label}</span>
@@ -65,7 +65,7 @@ const Field = ({ label, value, className = '' }) => (
     </div>
 );
 
-// ─── Form field wrapper ───────────────────────────────────────────────────────
+//  Form field wrapper 
 const FormField = ({ label, required, children, className = '' }) => (
     <div className={`space-y-1 ${className}`}>
         <label className="text-[9px] font-bold text-slate-500 uppercase">
@@ -78,7 +78,7 @@ const FormField = ({ label, required, children, className = '' }) => (
 const inputCls = "w-full border border-slate-200 rounded-xl p-2.5 focus:border-indigo-500 outline-none text-[11px] bg-white";
 const selectCls = "w-full border border-slate-200 rounded-xl p-2.5 outline-none text-[11px] bg-white focus:border-indigo-500";
 
-// ─── Initial form states ──────────────────────────────────────────────────────
+// Initial form states
 const EMPTY_CASE = {
     maBenhNhan: '',
     maDichBenh: '', maKhuVuc: '',
@@ -93,7 +93,7 @@ const EMPTY_CONTACT = {
     ngayTiepXuc: '', mucDoNguyCo: 'TRUNG_BINH', lat: '', lng: ''
 };
 
-// ─── Modal xác nhận nâng cấp ca tiếp xúc thành ca bệnh ──────────────────────
+//  Modal xác nhận nâng cấp ca tiếp xúc thành ca bệnh 
 const UpgradeContactModal = ({ contact, diseases, selectedArea, onConfirm, onCancel }) => {
     const [upgradeForm, setUpgradeForm] = useState({
         maBenhNhan: '',
@@ -200,17 +200,45 @@ const UpgradeContactModal = ({ contact, diseases, selectedArea, onConfirm, onCan
     );
 };
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+// Main Component 
 const CaseManagement = () => {
 
+    const handlePhoneChange = (e) => {
+        let value = e.target.value.replace(/\D/g, "");
+        if (value.length > 10) value = value.slice(0, 10);
+
+        setFormData(prev => ({
+            ...prev,
+            soDienThoai: value
+        }));
+    };
+
+    const handlePhoneChangeContact = (e) => {
+        let value = e.target.value.replace(/\D/g, "").slice(0, 10);
+        setContactForm(prev => ({ ...prev, soDienThoai: value }));
+    };
+
+    //  State: Khu vực được phân công 
     const [selectedArea, setSelectedArea] = useState(null);
+    const [areaLoading, setAreaLoading] = useState(true);
+
     useEffect(() => {
         const userId = localStorage.getItem("userId");
-        fetch(`http://localhost:8082/api/areas/manager/${userId}`)
-            .then(res => res.json())
+        fetch(`http://localhost:8080/api/areas/manager/${userId}`)
+            .then(res => {
+                if (!res.ok) throw new Error("No area assigned");
+                return res.json();
+            })
             .then(data => {
-                setSelectedArea({ id: data.id, maGADM: data.maGADM, level: data.level });
-            });
+                // Chỉ set nếu data hợp lệ và có id
+                if (data && data.id) {
+                    setSelectedArea({ id: data.id, maGADM: data.maGADM, level: data.level });
+                } else {
+                    setSelectedArea(null);
+                }
+            })
+            .catch(() => setSelectedArea(null))
+            .finally(() => setAreaLoading(false));
     }, []);
 
     const [diseases, setDiseases] = useState([]);
@@ -258,20 +286,20 @@ const CaseManagement = () => {
     const [isAddingContact, setIsAddingContact] = useState(false);
     const [contactForm, setContactForm] = useState(EMPTY_CONTACT);
 
-    // ─── State: Sửa ca tiếp xúc ─────────────────────────────────────────────
+    // Sửa ca tiếp xúc 
     const [editingContactId, setEditingContactId] = useState(null);
     const [editContactForm, setEditContactForm] = useState(EMPTY_CONTACT);
 
-    // ─── State: Nâng cấp ca tiếp xúc thành ca bệnh ───────────────────────────
+    // Nâng cấp ca tiếp xúc thành ca bệnh 
     const [upgradingContact, setUpgradingContact] = useState(null);
 
-    // ─── Cache thông tin người ghi nhận theo userId ───────────────────────────
+    // Cache thông tin người ghi nhận theo userId 
     const [reporterCache, setReporterCache] = useState({});
 
     const fetchReporter = async (userId) => {
         if (!userId || reporterCache[userId]) return;
         try {
-            const res = await fetch(`http://localhost:8081/api/users/${userId}`);
+            const res = await fetch(`http://localhost:8080/api/users/${userId}`);
             const data = await res.json();
             setReporterCache(prev => ({ ...prev, [userId]: data }));
         } catch (err) {
@@ -284,7 +312,7 @@ const CaseManagement = () => {
 
     useEffect(() => {
         if (!selectedCase?.nguoiBaoCao) return;
-        fetch(`http://localhost:8081/api/users/${selectedCase.nguoiBaoCao}`)
+        fetch(`http://localhost:8080/api/users/${selectedCase.nguoiBaoCao}`)
             .then(res => res.json())
             .then(data => setNguoiBaoCao(data))
             .catch(err => console.error(err));
@@ -301,9 +329,34 @@ const CaseManagement = () => {
     const filteredCases = useMemo(() =>
         cases
             .filter(c => !selectedDisease || c.maDichBenh === selectedDisease.id)
-            .filter(c => c.hoTen.toLowerCase().includes(searchTerm.toLowerCase())),
-        [selectedDisease, searchTerm, cases]
+
+            // nếu chưa chọn khu vực thì vẫn hiển thị
+            .filter(c => !selectedArea || c.maKhuVuc === selectedArea.id)
+
+            // serch theo tên, mã, SĐT
+            .filter(c => {
+                const keyword = searchTerm.toLowerCase();
+
+                return (
+                    c.hoTen?.toLowerCase().includes(keyword) ||
+                    c.maBenhNhan?.toString().toLowerCase().includes(keyword) ||
+                    c.soDienThoai?.includes(keyword)
+                );
+            }),
+        [selectedDisease, searchTerm, cases, selectedArea]
     );
+
+    const filteredCaseListMap = useMemo(() =>
+        cases
+            // Chỉ hiển thị ca bệnh DANG_MAC
+            .filter(c => c.tinhTrang === "DANG_MAC")
+            .filter(c => !selectedDisease || c.maDichBenh === selectedDisease.id)
+            // Chỉ hiển thị ca bệnh thuộc khu vực được phân công
+            .filter(c => selectedArea ? c.maKhuVuc === selectedArea.id : false)
+            .filter(c => c.hoTen.toLowerCase().includes(searchTerm.toLowerCase())),
+        [selectedDisease, searchTerm, cases, selectedArea]
+    );
+
 
     const gioiTinhLabel = g => ({ NAM: 'Nam', NU: 'Nữ', KHAC: 'Khác' }[g] || '—');
 
@@ -348,8 +401,8 @@ const CaseManagement = () => {
             setView('detail');
             setSelectedCaseId(res.data.maCaBenh);
         } catch (err) {
-            const msg = err.response?.data?.message || err.message;
-            alert("Lỗi lưu ca bệnh: " + msg);
+            // const msg = err.response?.data?.message || err.message;
+            alert("Lỗi lưu ca bệnh: Mã bệnh nhân đã tồn tại");
         }
     };
 
@@ -378,7 +431,7 @@ const CaseManagement = () => {
         }
     };
 
-    // ─── Mở form sửa ca tiếp xúc ─────────────────────────────────────────────
+    // Mở form sửa ca tiếp xúc 
     const handleOpenEditContact = (ct) => {
         setEditingContactId(ct.id);
         setEditContactForm({
@@ -391,11 +444,10 @@ const CaseManagement = () => {
             lat: ct.lat || '',
             lng: ct.lng || '',
         });
-        // Đóng form thêm mới nếu đang mở
         setIsAddingContact(false);
     };
 
-    // ─── Lưu sửa ca tiếp xúc ─────────────────────────────────────────────────
+    // Lưu sửa ca tiếp xúc 
     const handleSaveEditContact = async () => {
         if (!editContactForm.hoTen) return;
         const userId = localStorage.getItem("userId");
@@ -406,7 +458,6 @@ const CaseManagement = () => {
             gioiTinh: editContactForm.gioiTinh || null,
             ngayTiepXuc: editContactForm.ngayTiepXuc || null,
             mucDoNguyCo: editContactForm.mucDoNguyCo || 'TRUNG_BINH',
-            // Người sửa = người báo cáo mới
             nguoiBaoCao: userId ? parseInt(userId) : null,
             lat: editContactForm.lat ? parseFloat(editContactForm.lat) : null,
             lng: editContactForm.lng ? parseFloat(editContactForm.lng) : null,
@@ -432,7 +483,7 @@ const CaseManagement = () => {
         }
     };
 
-    // ─── Nâng cấp ca tiếp xúc thành ca bệnh ─────────────────────────────────
+    // Nâng cấp ca tiếp xúc thành ca bệnh 
     const handleUpgradeContact = async (upgradeForm) => {
         if (!upgradeForm.maBenhNhan || !upgradeForm.hoTen || !upgradeForm.ngayPhatHien) {
             alert("Vui lòng nhập đầy đủ thông tin bắt buộc");
@@ -455,11 +506,8 @@ const CaseManagement = () => {
         };
 
         try {
-            // 1. Tạo ca bệnh mới
             const res = await caseApi.cases.create(payload);
-            // 2. Xóa ca tiếp xúc
             await caseApi.contacts.delete(upgradingContact.id);
-            // 3. Reload + navigate tới ca bệnh mới
             await fetchCases();
             setUpgradingContact(null);
             setSelectedCaseId(res.data.maCaBenh);
@@ -482,6 +530,42 @@ const CaseManagement = () => {
         }
     };
 
+    // Đang tải thông tin khu vực
+    if (areaLoading) {
+        return (
+            <div className="flex h-screen w-full items-center justify-center bg-slate-50">
+                <div className="flex flex-col items-center gap-3 text-slate-400">
+                    <div className="w-8 h-8 border-2 border-indigo-300 border-t-indigo-600 rounded-full animate-spin" />
+                    <span className="text-[11px]">Đang tải thông tin khu vực...</span>
+                </div>
+            </div>
+        );
+    }
+
+    // Chưa được phân công khu vực 
+    if (!selectedArea) {
+        return (
+            <div className="flex h-screen w-full items-center justify-center bg-slate-50">
+                <div className="flex flex-col items-center gap-4 max-w-sm text-center">
+                    <div className="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center">
+                        <MapPin size={28} className="text-amber-400" />
+                    </div>
+                    <div className="space-y-1.5">
+                        <p className="font-bold text-slate-700 text-[14px]">Chưa được phân công khu vực</p>
+                        <p className="text-[11px] text-slate-400 leading-relaxed">
+                            Tài khoản của bạn chưa được phân công quản lý khu vực nào.
+                            Vui lòng liên hệ quản trị viên để được cấp quyền.
+                        </p>
+                    </div>
+                    <div className="px-4 py-2.5 bg-amber-50 border border-amber-100 rounded-xl flex items-center gap-2">
+                        <AlertCircle size={12} className="text-amber-500 shrink-0" />
+                        <span className="text-[10px] text-amber-700 font-medium">Bạn chưa được phân công khu vực</span>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="flex h-screen w-full bg-slate-50 overflow-hidden text-[11px]">
 
@@ -496,7 +580,7 @@ const CaseManagement = () => {
                 />
             )}
 
-            {/* ── Sidebar 1: Dịch bệnh ─────────────────────────────────── */}
+            {/* Sidebar Dịch bệnh */}
             {sb1Visible ? (
                 <ResizablePanel side="left" defaultWidth={200} min={160} className="bg-white border-r flex flex-col shrink-0">
                     <div className="p-3 border-b flex items-center justify-between h-10 bg-white">
@@ -541,7 +625,7 @@ const CaseManagement = () => {
                 </div>
             )}
 
-            {/* ── Sidebar 2: Danh sách ca bệnh ─────────────────────────── */}
+            {/*Sidebar Danh sách ca bệnh*/}
             <ResizablePanel side="left" defaultWidth={260} min={220} className="bg-white border-r flex flex-col shrink-0">
                 <div className="p-3 border-b flex justify-between items-center h-10 bg-white">
                     <span className="font-bold text-slate-400 uppercase text-[9px] tracking-wider">Danh sách ca bệnh</span>
@@ -579,11 +663,11 @@ const CaseManagement = () => {
                 </div>
             </ResizablePanel>
 
-            {/* ── Main ─────────────────────────────────────────────────── */}
+            {/*Main */}
             <main className="flex-1 p-2 flex flex-col min-w-0 relative">
                 <div className="flex-1 bg-white border rounded-2xl shadow-sm flex flex-col overflow-hidden">
 
-                    {/* ══ FORM THÊM / SỬA CA BỆNH ════════════════════════ */}
+                    {/* Thêm sửa ca bệnh*/}
                     {view === 'form' && formData ? (
                         <div className="flex flex-col h-full">
                             <div className="p-3 border-b bg-slate-50/50 flex justify-between items-center h-10 shrink-0">
@@ -626,7 +710,7 @@ const CaseManagement = () => {
                                             </FormField>
                                             <FormField label="Số điện thoại">
                                                 <input className={inputCls} value={formData.soDienThoai}
-                                                    onChange={e => setFormData({ ...formData, soDienThoai: e.target.value })}
+                                                    onChange={handlePhoneChange}
                                                     placeholder="09xx..." />
                                             </FormField>
                                             <FormField label="Loại bệnh">
@@ -732,7 +816,7 @@ const CaseManagement = () => {
                                 ))}
                             </div>
 
-                            {/* ── Tab: Thông tin ─────────────────────────── */}
+                            {/* tab thông tin */}
                             {activeTab === 'info' && (
                                 <div className="flex-1 grid grid-cols-2 overflow-hidden divide-x">
                                     <div className="overflow-y-auto">
@@ -779,7 +863,7 @@ const CaseManagement = () => {
                                 </div>
                             )}
 
-                            {/* ── Tab: Ca tiếp xúc ───────────────────────── */}
+                            {/* Tab ca tiếp xúc */}
                             {activeTab === 'contacts' && (
                                 <div className="flex-1 flex flex-col overflow-hidden">
 
@@ -794,7 +878,7 @@ const CaseManagement = () => {
                                         </button>
                                     </div>
 
-                                    {/* ── Form thêm ca tiếp xúc ── */}
+                                    {/*Form thêm ca tiếp xúc*/}
                                     {isAddingContact && (
                                         <div className="border-b border-indigo-100 bg-indigo-50/20 shrink-0">
                                             <div className="mx-3 my-3 border border-indigo-200 rounded-2xl overflow-hidden">
@@ -829,7 +913,7 @@ const CaseManagement = () => {
                                                         </FormField>
                                                         <FormField label="Số điện thoại">
                                                             <input className={inputCls} value={contactForm.soDienThoai}
-                                                                onChange={e => setContactForm({ ...contactForm, soDienThoai: e.target.value })}
+                                                                onChange={handlePhoneChangeContact}
                                                                 placeholder="09xx..." />
                                                         </FormField>
                                                         <FormField label="Ngày tiếp xúc">
@@ -885,7 +969,7 @@ const CaseManagement = () => {
                                         </div>
                                     )}
 
-                                    {/* ── Danh sách ca tiếp xúc ── */}
+                                    {/* Danh sách ca tiếp xúc*/}
                                     <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
                                         <SectionHead icon={Users} label={`Danh sách đã ghi nhận (${selectedCase.contacts?.length || 0})`} />
 
@@ -897,7 +981,6 @@ const CaseManagement = () => {
                                         )}
                                         <div className="flex-1 min-h-0 overflow-y-auto pb-20">
                                             {selectedCase.contacts?.map(ct => {
-                                                // LOGIC MỚI: Nếu đang sửa một ca khác ca hiện tại, thì ẩn ca hiện tại đi
                                                 if (editingContactId !== null && editingContactId !== ct.id) {
                                                     return null;
                                                 }
@@ -905,7 +988,6 @@ const CaseManagement = () => {
                                                 return (
                                                     <div key={ct.id}>
                                                         {editingContactId !== ct.id ? (
-                                                            /* ── Card ca tiếp xúc (Chỉ hiển thị khi không sửa bất kỳ ai) ── */
                                                             <div className="px-4 py-3 border-b border-slate-50 transition-all hover:bg-slate-50">
                                                                 <div className="flex items-start gap-3">
                                                                     <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-[11px] font-bold text-indigo-700 shrink-0 mt-0.5">
@@ -928,7 +1010,7 @@ const CaseManagement = () => {
                                                                             )}
                                                                             {ct.ngayTiepXuc && (
                                                                                 <span className="text-[9px] text-slate-400 flex items-center gap-1">
-                                                                                    <Clock size={8} />Tiếp xuc: {ct.ngayTiepXuc}
+                                                                                    <Clock size={8} />Tiếp xúc: {ct.ngayTiepXuc}
                                                                                 </span>
                                                                             )}
                                                                             {ct.lat && ct.lng && (
@@ -976,7 +1058,6 @@ const CaseManagement = () => {
                                                                 </div>
                                                             </div>
                                                         ) : (
-
                                                             <div className="border-b border-amber-200 bg-amber-50/30 shrink-0">
                                                                 <div className="mx-3 my-3 border border-black-200 rounded-2xl overflow-hidden shadow-sm">
                                                                     <div className="px-4 py-2 bg-blue-500 flex items-center justify-between">
@@ -1082,13 +1163,13 @@ const CaseManagement = () => {
                             )}
                         </div>
 
-                        /* ══ TRANG TRỐNG ════════════════════════════════════════ */
+
                     ) : (
                         <div className="flex-1 relative">
                             <CaseListMap
                                 selectedArea={selectedArea}
                                 areaColor="rgba(0,150,255,0.10)"
-                                cases={filteredCases}
+                                cases={filteredCaseListMap}
                             />
                         </div>
                     )}

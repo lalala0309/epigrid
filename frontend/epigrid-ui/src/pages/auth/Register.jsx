@@ -29,7 +29,7 @@ const Register = () => {
         }));
     };
 
-    /* ================= SUBMIT ================= */
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -43,7 +43,7 @@ const Register = () => {
         try {
             setLoading(true);
 
-            const res = await fetch("http://localhost:8081/api/auth/register", {
+            const res = await fetch("http://localhost:8080/api/auth/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -72,32 +72,31 @@ const Register = () => {
 
 
     return (
-        /* h-screen cố định cao và overflow-hidden để chặn thanh trượt */
         <div className="h-screen w-full flex font-sans bg-white overflow-hidden">
-            {/* NÚT QUAY LẠI TRANG CHỦ */}
+            {/* nút quay lại trang chủ*/}
             <Link
                 to="/"
                 className="
-        absolute top-6 left-6 z-50
+                    absolute top-6 left-6 z-50
 
-        flex items-center justify-center
-        w-12 h-12
+                    flex items-center justify-center
+                    w-12 h-12
 
-        text-white text-2xl
-        rounded-2xl
+                    text-white text-2xl
+                    rounded-2xl
 
-        transition-all duration-150
+                    transition-all duration-150
 
-        /* HOVER */
-        hover:bg-white
-        hover:text-[#1E3A8A]
-        hover:ring-4 hover:ring-white/90
+                    /* HOVER */
+                    hover:bg-white
+                    hover:text-[#1E3A8A]
+                    hover:ring-4 hover:ring-white/90
 
-        /* ACTIVE (click) */
-        active:bg-blue-100
-        active:text-[#1E3A8A]
-        active:ring-4 active:ring-white
-    "
+                    /* ACTIVE (click) */
+                    active:bg-blue-100
+                    active:text-[#1E3A8A]
+                    active:ring-4 active:ring-white
+                "
             >
                 <i className="bi bi-chevron-left"></i>
             </Link>
@@ -105,19 +104,19 @@ const Register = () => {
 
 
 
-            {/* PHẦN BÊN TRÁI: Branding Section (Giữ nguyên phong cách Deep Blue) */}
+            {/* phân bên phải Branding Section (*/}
             <div className="hidden lg:flex lg:w-1/2 bg-[#0F172A] items-center justify-center p-12 relative overflow-hidden">
                 <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-[120px]"></div>
                 <div className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] bg-indigo-500/10 rounded-full blur-[100px]"></div>
 
                 <div className="relative z-10 max-w-md text-center">
-                    <div className="mb-10 inline-flex p-5 bg-white/5 backdrop-blur-xl border border-white/10 rounded-[32px] shadow-2xl">
+                    <div className="mb-10 inline-flex p-5 bg-white/5 backdrop-blur-xl border border-white/10 rounded-[30px] shadow-2xl">
                         <img src={logo} alt="Logo" className="w-16 h-16 object-contain brightness-0 invert" />
                     </div>
 
                     <h2 className="text-[42px] font-black text-white leading-tight mb-6 tracking-tight">
                         Gia nhập hệ thống <br />
-                        <span className="text-blue-400">EpiGrid Global</span>
+                        <span className="text-blue-400">EpiGrid</span>
                     </h2>
 
                     <p className="text-slate-400 text-lg leading-relaxed font-medium opacity-80">
@@ -136,10 +135,8 @@ const Register = () => {
                 </div> */}
             </div>
 
-            {/* PHẦN BÊN PHẢI: Register Form - Đã chuyển hoàn toàn sang nền trắng */}
+            {/* phàn bên phải*/}
             <div className="w-full lg:w-1/2 flex flex-col items-center justify-center -translate-y-7 md:-translate-y-6 bg-white">
-
-                {/* Container Form - Không viền, không đổ bóng, nền trắng trùng với cha */}
                 <div className="max-w-[520px] w-full bg-white px-6 py-4">
 
                     {/* Brand Logo & Header */}

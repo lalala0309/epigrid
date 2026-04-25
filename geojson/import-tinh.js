@@ -11,6 +11,7 @@ function normalizeName(name) {
         .trim();
 }
 
+
 async function run() {
 
     const conn = await mysql.createConnection({
@@ -26,8 +27,7 @@ async function run() {
     for (const feature of geo.features) {
 
         const props = feature.properties;
-
-        const maGADM = props.GID_1;      // ví dụ: VNM.7_1
+        const maGADM = props.GID_1;
         const ten = normalizeName(props.NAME_1);
 
         await conn.execute(

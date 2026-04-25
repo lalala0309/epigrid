@@ -21,7 +21,7 @@ const Login = () => {
                 const lng = pos.coords.longitude;
 
                 try {
-                    const res = await fetch("http://localhost:8081/api/auth/login", {
+                    const res = await fetch("http://localhost:8080/api/auth/login", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
@@ -50,7 +50,7 @@ const Login = () => {
                     localStorage.setItem("userId", data.userId);
                     localStorage.setItem("role", data.role);
 
-                    // redirect
+                    // điều hướng theo vài trò
                     switch (data.role) {
                         case "ADMIN":
                             navigate("/admin");
@@ -70,7 +70,7 @@ const Login = () => {
             async (err) => {
                 console.log("Không lấy được vị trí", err);
 
-                // fallback: login không có GPS
+                // ogin không có GPS
                 try {
                     const res = await fetch("http://localhost:8081/api/auth/login", {
                         method: "POST",
@@ -105,32 +105,32 @@ const Login = () => {
         /* Thêm h-screen để cố định chiều cao và overflow-hidden để chặn thanh trượt */
         <div className="h-screen w-full flex font-sans bg-white overflow-hidden">
 
-            {/* PHẦN BÊN TRÁI: Welcome Section */}
+            {/* bên phải chào mừng */}
             <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#F8FAFF] to-[#E0E7FF] items-center justify-center p-12 relative overflow-hidden">
-                {/* NÚT QUAY LẠI TRANG CHỦ */}
+                {/* nút quay lại */}
                 <Link
                     to="/"
                     className="
-        absolute top-6 left-6 z-50
+                                absolute top-6 left-6 z-50
 
-        flex items-center justify-center
-        w-12 h-12
+                                flex items-center justify-center
+                                w-12 h-12
 
-        text-blue text-2xl
-        rounded-2xl
+                                text-blue text-2xl
+                                rounded-2xl
 
-        transition-all duration-150
+                                transition-all duration-150
 
-        /* HOVER */
-        hover:bg-white
-        hover:text-[#1E3A8A]
-        hover:ring-4 hover:ring-white/90
+                                /* HOVER */
+                                hover:bg-white
+                                hover:text-[#1E3A8A]
+                                hover:ring-4 hover:ring-white/90
 
-        /* ACTIVE (click) */
-        active:bg-blue-100
-        active:text-[#1E3A8A]
-        active:ring-4 active:ring-white
-    "
+                                /* ACTIVE (click) */
+                                active:bg-blue-100
+                                active:text-[#1E3A8A]
+                                active:ring-4 active:ring-white
+                            "
                 >
                     <i className="bi bi-chevron-left"></i>
                 </Link>
@@ -143,7 +143,7 @@ const Login = () => {
                         {/* <span className="text-2xl font-bold text-slate-500 opacity-80">(Hệ thống quản trị dịch tễ)</span> */}
                     </h2>
                     <p className="text-slate-600 text-center leading-relaxed mb-8 font-medium">
-                        Công cụ phân tích dữ liệu hỗ trợ bản đồ số hóa giúp cộng đồng an toàn hơn thông qua cảnh báo thông tin thời gian thực
+                        EpiGrid cung cấp giải pháp bản đồ số và dữ liệu giúp quản lý và cảnh báo sự lây lan của các loại dịch bệnh
                     </p>
 
                     <div className="relative inline-block group">
@@ -151,7 +151,7 @@ const Login = () => {
                         <img
                             src={map_background}
                             alt="Illustration"
-                            className="relative w-full max-w-[320px] h-auto rounded-[2rem] shadow-sm transform transition-transform hover:-translate-y-2 duration-500"
+                            className="relative w-full max-w-[320px] h-auto rounded-[2rem] shadow-sm transform transition-transform duration-500"
                         />
                     </div>
                 </div>

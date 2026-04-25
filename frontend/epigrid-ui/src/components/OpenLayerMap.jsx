@@ -25,7 +25,7 @@ const OpenLayerMap = ({ selectedArea, areaColor }) => {
 
     const featureMapRef = useRef(new Map());
 
-    /* ================= INIT MAP ================= */
+    /* Khởi tạo map */
     useEffect(() => {
 
         areaSourceRef.current = new VectorSource();
@@ -35,7 +35,7 @@ const OpenLayerMap = ({ selectedArea, areaColor }) => {
             source: areaSourceRef.current,
             style: new Style({
                 fill: new Fill({
-                    color: areaColor || "rgba(0,150,255,0.08)"   // nếu có param thì dùng
+                    color: areaColor || "rgba(0,150,255,0.08)"
                 }),
                 stroke: new Stroke({
                     color: "#0047b3",
@@ -121,7 +121,6 @@ const OpenLayerMap = ({ selectedArea, areaColor }) => {
                 }
 
                 const format = new GeoJSON();
-
                 const features = format.readFeatures(
                     {
                         type: "FeatureCollection",
@@ -132,8 +131,7 @@ const OpenLayerMap = ({ selectedArea, areaColor }) => {
 
                 areaSourceRef.current.addFeatures(features);
 
-                /* ====== TẠO MASK ====== */
-
+                /* tạo mask */
                 const worldExtent = [
                     -20037508, -20037508,
                     20037508, 20037508
@@ -158,8 +156,7 @@ const OpenLayerMap = ({ selectedArea, areaColor }) => {
                 const maskFeature = new Feature(maskPolygon);
                 maskSourceRef.current.addFeature(maskFeature);
 
-                /* ====== ZOOM ====== */
-
+                /* zoom*/
                 mapRefObj.current.getView().fit(
                     areaSourceRef.current.getExtent(),
                     { padding: [80, 80, 80, 80], duration: 600 }

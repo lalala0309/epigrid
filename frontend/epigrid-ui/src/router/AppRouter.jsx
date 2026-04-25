@@ -19,6 +19,7 @@ import AgentsPage from "../pages/admin/disease/AgentsPage";
 import SymptomsPage from "../pages/admin/disease/SymptomsPage";
 import TransmissionPage from "../pages/admin/disease/TransmissionPage";
 import DangerGroupPage from "../pages/admin/disease/DangerGroupPage";
+import DiseaseDashboard from "../pages/admin/DiseaseDashboard";
 
 const AppRouter = () => {
     return (
@@ -39,7 +40,7 @@ const AppRouter = () => {
                         <Route path="transmissions" element={<TransmissionPage />} />
                         <Route path="danger-groups" element={<DangerGroupPage />} />
                     </Route>
-
+                    <Route path="disease-dashboard" element={<DiseaseDashboard />} />
                 </Route>
 
                 <Route path="/user" element={<UserLayout />}>

@@ -14,7 +14,6 @@ public class JwtUtil {
     private final Key key;
 
     public JwtUtil(@Value("${jwt.secret}") String secret) {
-        // secret phải là Base64
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
 
     }
@@ -32,7 +31,6 @@ public class JwtUtil {
                 .compact();
     }
 
-    // ⭐ SẼ DÙNG KHI BẬT SECURITY
     public Claims extractClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)

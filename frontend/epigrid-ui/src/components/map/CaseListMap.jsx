@@ -21,7 +21,7 @@ const CaseListMap = ({ selectedArea, cases, areaColor }) => {
     const maskSourceRef = useRef(new VectorSource());
     const markerSourceRef = useRef(new VectorSource());
 
-    /* INIT MAP */
+    /* khởi tạo bản đồ */
     useEffect(() => {
 
         const areaLayer = new VectorLayer({
@@ -75,7 +75,7 @@ const CaseListMap = ({ selectedArea, cases, areaColor }) => {
 
     }, []);
 
-    /* LOAD AREA */
+    /* load khu vực */
     useEffect(() => {
         if (!selectedArea?.maGADM || !selectedArea?.level) return;
 
